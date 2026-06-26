@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Tarô do Nunca | Jogo de Confissões Místicas</title>
+    <!-- Google Fonts for Mystical Tarot & Woodcut style -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Sound toggler and global decoration -->
+    <div class="mystic-bg-overlay"></div>
+    <div class="sound-control-wrapper">
+        <button id="btn-toggle-sound" class="btn-icon" aria-label="Alternar som" title="Alternar som místico">
+            <span class="sound-icon">🔔</span>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <h1 class="mystic-title">O Tarô do Nunca</h1>
+            <p class="mystic-subtitle">Revele seus pecados e sele seu destino</p>
+        </header>
+
+        <!-- Main Screen Views -->
+        <main class="screens-container">
+
+            <!-- SCREEN 1: LOBBY -->
+            <section id="screen-lobby" class="game-screen active" tabindex="-1" aria-labelledby="lobby-heading">
+                <h2 id="lobby-heading" class="sr-only">Lobby de Configuração</h2>
+                
+                <div class="intro-box">
+                    <p class="intro-text">
+                        Bem-vindas à mesa do destino. Digitem seus nomes para sentarem-se em círculo. 
+                        A cada rodada, uma carta será revelada. Aquelas que já cometeram o pecado perderão um cálice de sua essência vital.
+                    </p>
+                </div>
+
+                <!-- Add player form -->
+                <form id="form-add-player" class="lobby-form" onsubmit="return false;">
+                    <div class="input-group">
+                        <label for="player-name-input" class="sr-only">Nome da Jogadora</label>
+                        <input type="text" id="player-name-input" placeholder="Nome da jogadora..." required maxlength="15" autocomplete="off">
+                    </div>
+                    <div class="archetype-selector">
+                        <span class="selector-label">Temperamento:</span>
+                        <div class="archetype-options">
+                            <label class="radio-label">
+                                <input type="radio" name="archetype" value="labrador" checked>
+                                <span class="custom-radio">🐕 Labrador</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="archetype" value="gato-preto">
+                                <span class="custom-radio">🐈 Gato Preto</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-add-player" class="btn-mystic btn-large" style="margin-top: 0.8rem;">Invocar no Círculo</button>
+                </form>
+
+                <!-- Players Circle -->
+                <div class="players-lobby-section">
+                    <h3 class="section-title">O Círculo Invocado</h3>
+                    <ul id="lobby-players-list" class="players-list-badge">
+                        <!-- Javascript will populate players here -->
+                        <li class="empty-list-msg">Nenhuma alma invocada ainda...</li>
+                    </ul>
+                </div>
+
+                <div class="lobby-actions">
+                    <button id="btn-start-game" class="btn-mystic btn-large disabled" disabled>Iniciar a Leitura</button>
+                </div>
+            </section>
+
+
+            <!-- SCREEN 2: GAMEPLAY (DECK SCREEN) -->
+            <section id="screen-gameplay" class="game-screen" tabindex="-1" aria-labelledby="gameplay-heading">
+                <h2 id="gameplay-heading" class="sr-only">Mesa de Tiragem</h2>
+                
+                <div class="turn-announcement">
+                    <p class="turn-subtitle">O Destino chama por...</p>
+                    <h3 id="active-player-name" class="active-player-title">Carregando...</h3>
+                </div>
+
+                <!-- Card Deck Area -->
+                <div class="deck-area">
+                    <div class="deck-container">
+                        <div id="mystic-card-deck" class="card-deck-visual" role="button" aria-label="Tirar uma carta do destino">
+                            <!-- Layered cards for depth -->
+                            <div class="deck-card-layer layer-1"></div>
+                            <div class="deck-card-layer layer-2"></div>
+                            <div class="deck-card-layer layer-3"></div>
+                            <div class="deck-card-layer top-card">
+                                <div class="deck-back-art"></div>
+                                <div class="deck-prompt-text">Toque para Tirar</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive helper -->
+                <p class="deck-helper-text">Toque no baralho para realizar a tiragem do arcano</p>
+
+                <!-- Floating/Drawer Scoreboard for Game Session -->
+                <div class="game-scoreboard">
+                    <h4 class="scoreboard-title">Cálices de Essência</h4>
+                    <div id="scoreboard-players" class="scoreboard-grid">
+                        <!-- Dynamic scores -->
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- SCREEN 3: CARD REVEAL & CONFESSION -->
+            <section id="screen-reveal" class="game-screen" tabindex="-1" aria-labelledby="reveal-heading">
+                <h2 id="reveal-heading" class="sr-only">Revelação do Arcano</h2>
+
+                <!-- 3D Card Flip Area -->
+                <div class="reveal-card-viewport">
+                    <div id="card-flip-3d" class="tarot-card-3d">
+                        <!-- CARD BACK -->
+                        <div class="card-side back">
+                            <div class="card-inner-border">
+                                <div class="card-art-back"></div>
+                            </div>
+                        </div>
+                        <!-- CARD FRONT -->
+                        <div class="card-side front">
+                            <div class="card-inner-border">
+                                <div class="card-header-info">
+                                    <span id="arcana-number" class="arcana-num">XVI</span>
+                                    <h3 id="arcana-title" class="arcana-name">O DIABO</h3>
+                                </div>
+                                
+                                <div class="card-illustration-container">
+                                    <!-- Fallback or custom woodblock image -->
+                                    <div id="arcana-illustration" class="card-illustration"></div>
+                                </div>
+
+                                <div class="card-statement-container">
+                                    <p class="statement-prefix">Eu nunca...</p>
+                                    <blockquote id="arcana-statement" class="statement-text">
+                                        "Stalkeei as redes sociais de alguém até achar postagens de cinco anos atrás."
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confession Section -->
+                <div class="confession-panel">
+                    <h3 class="confession-title">Quem confessa o pecado?</h3>
+                    <p class="confession-subtitle">Marque as jogadoras que já fizeram isso (perderão 1 cálice):</p>
+                    
+                    <div id="confession-players-list" class="confession-grid">
+                        <!-- JavaScript will generate player checkboxes/toggles -->
+                    </div>
+
+                    <button id="btn-submit-confession" class="btn-mystic btn-large">Consignar ao Destino</button>
+                </div>
+            </section>
+
+
+            <!-- SCREEN 4: GAME OVER -->
+            <section id="screen-gameover" class="game-screen" tabindex="-1" aria-labelledby="gameover-heading">
+                <h2 id="gameover-heading" class="mystic-title large">O Destino foi Selado</h2>
+                
+                <div class="gameover-summary">
+                    <p class="intro-text center">
+                        A essência de uma de vocês se esvaiu por completo ou todas as cartas do baralho foram reveladas. As verdades foram expostas sob a luz das cartas.
+                    </p>
+                </div>
+
+                <!-- Final Standings -->
+                <div class="standings-box">
+                    <h3 class="section-title">Julgamento Final</h3>
+                    <div id="gameover-rankings" class="rankings-list">
+                        <!-- Dynamic list of players with labels like "A Alma Mais Pura" or "A Condenada" -->
+                    </div>
+                </div>
+
+                <div class="gameover-actions">
+                    <button id="btn-restart-game" class="btn-mystic btn-large">Começar Outra Leitura</button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Criado para rodas de fofocas e revelações místicas.</p>
+        </footer>
+
+    </div>
+
+    <!-- SVG Filters for rough hand-carved woodblock print effect -->
+    <svg style="position: absolute; width: 0; height: 0;" width="0" height="0" aria-hidden="true">
+        <defs>
+            <!-- Filter for rugged, bleeding ink edge -->
+            <filter id="woodcut-roughness" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+            
+            <!-- Shading pattern for SVG fallbacks -->
+            <pattern id="hatching" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="10" style="stroke: var(--color-ink); stroke-width:1" />
+            </pattern>
+        </defs>
+    </svg>
+
+    <script src="app.js"></script>
+</body>
+</html>
