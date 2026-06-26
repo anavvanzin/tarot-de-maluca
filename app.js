@@ -32,7 +32,12 @@ const ALL_CARDS = [
     { id: 18, title: "A LUA", num: "XVIII", image: "assets/arcana-moon.png", text: "passei mais de duas horas stalkeando o perfil de um crush até descobrir qual era o signo solar, lunar e ascendente dela." },
     { id: 19, title: "O SOL", num: "XIX", image: null, text: "tentei paquerar alguém de forma direta e a pessoa achou que eu estava apenas sendo 'uma amiga extremamente simpática e fofa'." },
     { id: 20, title: "O JULGAMENTO", num: "XX", image: null, text: "mandei mensagem ou print reclamando das atitudes de um crush ou amiga para a própria pessoa por puro engano." },
-    { id: 21, title: "O MUNDO", num: "XXI", image: null, text: "aluguei um caminhão de mudança ou comecei a dividir teto (o clássico meme U-Haul) antes de completar seis meses de relacionamento." }
+    { id: 21, title: "O MUNDO", num: "XXI", image: null, text: "aluguei um caminhão de mudança ou comecei a dividir teto (o clássico meme U-Haul) antes de completar seis meses de relacionamento." },
+    { id: 22, title: "A ANDRESSA", num: "XXII", image: "assets/arcana-andressa.png", text: "comprei mais uma blusa preta, fiz outra tatuagem de dragão ou passei a noite inteira bebendo martini fingindo desinteresse só para chamar a atenção da garota." },
+    { id: 23, title: "A PATRÍCIA", num: "XXIII", image: "assets/arcana-patricia.png", text: "passei duas horas fazendo um delineado gótico impecável só para ir ao mercado, ou comprei uma camiseta de streetwear três tamanhos maior só para parecer descolada." },
+    { id: 24, title: "A SABRINA", num: "XXIV", image: "assets/arcana-sabrina.png", text: "usei um colar de Senhor dos Anéis (a Estrela Vespertina), passei batom escuro e fiz pose de paz e amor fingindo ser durona de jaqueta de couro." },
+    { id: 25, title: "A SHAI", num: "XXV", image: "assets/arcana-shai.png", text: "comprei um bolo decorado de natal inteiro só para tirar fotos estéticas, ou passei horas me admirando no espelho com look brilhante e choker preta." },
+    { id: 26, title: "A ANA", num: "XXVI", image: "assets/arcana-ana.png", text: "andei com uma caneca de metal pela casa fingindo sobriedade, tirei foto com fundo de nuvens falsas ou fiz mais uma tatuagem minimalista no braço." }
 ];
 
 // Active State
