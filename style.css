@@ -903,7 +903,7 @@ body[data-screen="reveal"] .screens-container {
 .deck-back-art {
     flex-grow: 1;
     border: 2px solid var(--color-gold-dark);
-    background-image: url('assets/card-back.png');
+    background-image: url('./public/assets/card-back.png');
     background-size: cover;
     background-position: center;
     filter: sepia(0.2) contrast(1.1);
@@ -1109,7 +1109,7 @@ body[data-screen="reveal"] .screens-container {
 .card-art-back {
     flex-grow: 1;
     border: 2px solid var(--color-gold-dark);
-    background-image: url('assets/card-back.png');
+    background-image: url('./public/assets/card-back.png');
     background-size: cover;
     background-position: center;
 }

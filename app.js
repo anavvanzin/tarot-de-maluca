@@ -20,7 +20,7 @@ let audioCtx = null;
 
 // Game Data
 const ALL_CARDS = [
-    { id: 0, title: "O LOUCO", num: "0", image: "assets/arcana-fool.png", text: "viajei para outra cidade ou estado só para ver uma garota sáfica que conheci na internet na mesma semana." },
+    { id: 0, title: "O LOUCO", num: "0", image: "assets/arcana-fool.png", text: "viajei para outra cidade or estado só para ver uma garota sáfica que conheci na internet na mesma semana." },
     { id: 1, title: "O MAGO", num: "I", image: null, text: "mudei meu visual inteiro (corte de cabelo radical, estilo de roupas) após um término ou por causa de um novo crush." },
     { id: 2, title: "A SACERDOTISA", num: "II", image: null, text: "fingi que não sabia fazer algo simples (como abrir um pote ou montar um móvel) só para deixar a garota fazer e parecer forte." },
     { id: 3, title: "A IMPERATRIZ", num: "III", image: null, text: "planejei o casamento inteiro, escolhi os nomes dos filhos e adotei três gatos na minha cabeça logo após o primeiro encontro." },
@@ -1308,6 +1308,7 @@ function drawCard() {
         if (SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]) {
             imgUrl = `assets/${SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]}-${PLAYER_AVATAR_DEFAULT_VARIANT}.png`;
         }
+        arcanaIllustration.innerHTML = '';
         arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
     } else {
         arcanaIllustration.style.backgroundImage = 'none';
@@ -2002,6 +2003,7 @@ if (themeSelector) {
         // Update active player card image if revealed
         if (currentCard && SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]) {
             const imgUrl = `assets/${SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]}-${PLAYER_AVATAR_DEFAULT_VARIANT}.png`;
+            arcanaIllustration.innerHTML = '';
             arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
         }
         
