@@ -333,8 +333,8 @@ body::before {
     background: var(--color-obsidian);
     border: 2px solid var(--color-gold);
     color: var(--color-gold);
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -349,6 +349,20 @@ body::before {
 .btn-icon:hover {
     transform: scale(1.08);
     box-shadow: 0 0 8px var(--color-gold);
+}
+
+.btn-icon svg {
+    width: 22px;
+    height: 22px;
+    transition: transform var(--transition-fast);
+}
+
+.btn-icon:hover svg {
+    transform: rotate(6deg) scale(1.05);
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
 }
 
 /* ==========================================================================
@@ -1827,7 +1841,9 @@ body.theme-cosmic .score-item.arch-gato-preto {
     width: 100%;
     margin-bottom: 1.2rem;
     border: 1px solid var(--color-gold-dark);
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(20, 10, 10, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     filter: url(#woodcut-roughness);
     transition: all var(--transition-normal);
 }
@@ -1881,7 +1897,9 @@ body.theme-cosmic .score-item.arch-gato-preto {
     align-items: center;
     justify-content: center;
     border: 2px double var(--color-gold);
-    background-color: rgba(20, 10, 10, 0.7);
+    background-color: rgba(20, 10, 10, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     padding: 0.8rem;
     margin-bottom: 1.2rem;
     filter: url(#woodcut-roughness);
