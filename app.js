@@ -11,7 +11,7 @@ let audioCtx = null;
 
 // Game Data
 const ALL_CARDS = [
-    { id: 0, title: "O LOUCO", num: "0", image: "assets/arcana-fool.png", text: "viajei para outra cidade ou estado só para ver uma garota sáfica que conheci na internet na mesma semana." },
+    { id: 0, title: "O LOUCO", num: "0", image: "/assets/arcana-fool.png", text: "viajei para outra cidade ou estado só para ver uma garota sáfica que conheci na internet na mesma semana." },
     { id: 1, title: "O MAGO", num: "I", image: null, text: "mudei meu visual inteiro (corte de cabelo radical, estilo de roupas) após um término ou por causa de um novo crush." },
     { id: 2, title: "A SACERDOTISA", num: "II", image: null, text: "fingi que não sabia fazer algo simples (como abrir um pote ou montar um móvel) só para deixar a garota fazer e parecer forte." },
     { id: 3, title: "A IMPERATRIZ", num: "III", image: null, text: "planejei o casamento inteiro, escolhi os nomes dos filhos e adotei três gatos na minha cabeça logo após o primeiro encontro." },
@@ -24,20 +24,20 @@ const ALL_CARDS = [
     { id: 10, title: "A RODA DA FORTUNA", num: "X", image: null, text: "participei de um grupo de amigas onde quase todo mundo já tinha ficado com todo mundo em algum momento do passado.", special: "Roda da Fortuna: O destino gira! Quem confessar desta vez recupera 1 cálice de essência; quem não confessar perde 1 cálice." },
     { id: 11, title: "A FORÇA", num: "XI", image: null, text: "tentei carregar algo super pesado ou fazer trabalho manual complexo sozinha só para provar a mim mesma que mulheres conseguem tudo.", special: "Força Singular: Se apenas uma jogadora confessar, ela não perde essência. Se duas ou mais confessarem, todas perdem 1 cálice." },
     { id: 12, title: "O ENFORCADO", num: "XII", image: null, text: "fiquei presa em um chove-não-molha sáfico por meses sabendo lá no fundo que não daria em nada.", special: "Sacrifício do Enforcado: Se exatamente uma jogadora confessar, ela perde 2 cálices, mas todas as outras recuperam 1 cálice." },
-    { id: 13, title: "A MORTE", num: "XIII", image: "assets/arcana-death.png", text: "dei um 'mute' ou deixei de seguir mais de 10 conhecidas do círculo sáfico local de uma vez só para preservar minha paz de espírito.", special: "Renascimento da Morte: As jogadoras com menos vidas no círculo recebem imunidade nesta rodada, mesmo se confessarem." },
+    { id: 13, title: "A MORTE", num: "XIII", image: "/assets/arcana-death.png", text: "dei um 'mute' ou deixei de seguir mais de 10 conhecidas do círculo sáfico local de uma vez só para preservar minha paz de espírito.", special: "Renascimento da Morte: As jogadoras com menos vidas no círculo recebem imunidade nesta rodada, mesmo se confessarem." },
     { id: 14, title: "A TEMPERANÇA", num: "XIV", image: null, text: "tentei acalmar uma fofoca na roda contando um segredo mas finalizando com a frase clássica: 'mas não espalha, hein'." },
-    { id: 15, title: "O DIABO", num: "XV", image: "assets/arcana-devil.png", text: "mandei mensagem de 'oi sumida' nas redes sociais nas primeiras horas da madrugada para aquela garota que tinha me deixado no vácuo." },
-    { id: 16, title: "A TORRE", num: "XVI", image: "assets/arcana-tower.png", text: "causei ou alimentei um drama gigante em um grupo de WhatsApp ou no meio do rolê por conta de um mal-entendido bobo." },
+    { id: 15, title: "O DIABO", num: "XV", image: "/assets/arcana-devil.png", text: "mandei mensagem de 'oi sumida' nas redes sociais nas primeiras horas da madrugada para aquela garota que tinha me deixado no vácuo." },
+    { id: 16, title: "A TORRE", num: "XVI", image: "/assets/arcana-tower.png", text: "causei ou alimentei um drama gigante em um grupo de WhatsApp ou no meio do rolê por conta de um mal-entendido bobo." },
     { id: 17, title: "A ESTRELA", num: "XVII", image: null, text: "treinei uma DR (discussão de relação) inteira na minha mente ou no espelho do banheiro fingindo estar conversando com a pessoa.", special: "Esperança da Estrela: Se absolutamente ninguém confessar, todas recuperam 1 cálice. Caso contrário, as confessadas perdem 1 cálice." },
-    { id: 18, title: "A LUA", num: "XVIII", image: "assets/arcana-moon.png", text: "passei mais de duas horas stalkeando o perfil de um crush até descobrir qual era o signo solar, lunar e ascendente dela." },
+    { id: 18, title: "A LUA", num: "XVIII", image: "/assets/arcana-moon.png", text: "passei mais de duas horas stalkeando o perfil de um crush até descobrir qual era o signo solar, lunar e ascendente dela." },
     { id: 19, title: "O SOL", num: "XIX", image: null, text: "tentei paquerar alguém de forma direta e a pessoa achou que eu estava apenas sendo 'uma amiga extremamente simpática e fofa'." },
     { id: 20, title: "O JULGAMENTO", num: "XX", image: null, text: "mandei mensagem ou print reclamando das atitudes de um crush ou amiga para a própria pessoa por puro engano.", special: "Julgamento Coletivo: Se a maioria das jogadoras confessar, ninguém perde essência. Se for metade ou menos, as confessadas perdem 2 cálices." },
     { id: 21, title: "O MUNDO", num: "XXI", image: null, text: "aluguei um caminhão de mudança ou comecei a dividir teto (o clássico meme U-Haul) antes de completar seis meses de relacionamento." },
-    { id: 22, title: "A ANDRESSA", num: "XXII", image: "assets/arcana-andressa.png", text: "comprei mais uma blusa preta, fiz outra tatuagem de dragão ou passei a noite inteira bebendo martini fingindo desinteresse só para chamar a atenção da garota." },
-    { id: 23, title: "A PATRÍCIA", num: "XXIII", image: "assets/arcana-patricia.png", text: "passei duas horas fazendo um delineado gótico impecável só para ir ao mercado, ou comprei uma camiseta de streetwear três tamanhos maior só para parecer descolada." },
-    { id: 24, title: "A SABRINA", num: "XXIV", image: "assets/arcana-sabrina.png", text: "usei um colar de Senhor dos Anéis (a Estrela Vespertina), passei batom escuro e fiz pose de paz e amor fingindo ser durona de jaqueta de couro." },
-    { id: 25, title: "A SHAI", num: "XXV", image: "assets/arcana-shai.png", text: "comprei um bolo decorado de natal inteiro só para tirar fotos estéticas, ou passei horas me admirando no espelho com look brilhante e choker preta." },
-    { id: 26, title: "A ANA", num: "XXVI", image: "assets/arcana-ana.png", text: "andei com uma caneca de metal pela casa fingindo sobriedade, tirei foto com fundo de nuvens falsas ou fiz mais uma tatuagem minimalista no braço." }
+    { id: 22, title: "A ANDRESSA", num: "XXII", image: "/assets/arcana-andressa.png", text: "comprei mais uma blusa preta, fiz outra tatuagem de dragão ou passei a noite inteira bebendo martini fingindo desinteresse só para chamar a atenção da garota." },
+    { id: 23, title: "A PATRÍCIA", num: "XXIII", image: "/assets/arcana-patricia.png", text: "passei duas horas fazendo um delineado gótico impecável só para ir ao mercado, ou comprei uma camiseta de streetwear três tamanhos maior só para parecer descolada." },
+    { id: 24, title: "A SABRINA", num: "XXIV", image: "/assets/arcana-sabrina.png", text: "usei um colar de Senhor dos Anéis (a Estrela Vespertina), passei batom escuro e fiz pose de paz e amor fingindo ser durona de jaqueta de couro." },
+    { id: 25, title: "A SHAI", num: "XXV", image: "/assets/arcana-shai.png", text: "comprei um bolo decorado de natal inteiro só para tirar fotos estéticas, ou passei horas me admirando no espelho com look brilhante e choker preta." },
+    { id: 26, title: "A ANA", num: "XXVI", image: "/assets/arcana-ana.png", text: "andei com uma caneca de metal pela casa fingindo sobriedade, tirei foto com fundo de nuvens falsas ou fiz mais uma tatuagem minimalista no braço." }
 ];
 
 // Active State
@@ -905,8 +905,9 @@ function drawCard() {
                 25: 'shai',
                 26: 'ana'
             };
-            imgUrl = `assets/${playerNamesMap[currentCard.id]}-${currentTheme}.png`;
+            imgUrl = `/assets/${playerNamesMap[currentCard.id]}-${currentTheme}.png`;
         }
+        arcanaIllustration.innerHTML = '';
         arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
     } else if (currentCard.isCustom) {
         arcanaIllustration.style.backgroundImage = 'none';
@@ -1715,7 +1716,8 @@ if (themeSelector) {
                 25: 'shai',
                 26: 'ana'
             };
-            const imgUrl = `assets/${playerNamesMap[currentCard.id]}-${currentTheme}.png`;
+            const imgUrl = `/assets/${playerNamesMap[currentCard.id]}-${currentTheme}.png`;
+            arcanaIllustration.innerHTML = '';
             arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
         }
         
