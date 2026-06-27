@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>O Tarô de Maluca | Jogo de Confissões Sáficas</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <!-- Google Fonts for Mystical Tarot & Woodcut style -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -129,6 +130,23 @@
                     <h3 id="active-player-name" class="active-player-title">Carregando...</h3>
                 </div>
 
+                <div id="ritual-status-bar" class="ritual-status-bar" aria-live="polite">
+                    <span class="ritual-status-pill">
+                        <span class="status-label">Modo</span>
+                        <strong id="ritual-mode-label">Sobrevivência</strong>
+                    </span>
+                    <span class="ritual-status-pill">
+                        <span class="status-label">Arcanos</span>
+                        <strong><span id="ritual-revealed-count">0</span>/<span id="ritual-total-count">0</span></strong>
+                    </span>
+                    <span class="ritual-status-pill">
+                        <span class="status-label">Restam</span>
+                        <strong id="ritual-deck-count">0</strong>
+                    </span>
+                </div>
+
+                <div id="last-omen-strip" class="last-omen-strip">A mesa ainda aguarda o primeiro presságio.</div>
+
                 <!-- Cálice Sagrado display (visible in Sueca mode) -->
                 <div id="calice-sagrado-container" class="calice-sagrado-box hidden">
                     <span class="calice-label">🍷 Cálice Sagrado:</span>
@@ -141,7 +159,7 @@
                 <!-- Card Deck Area -->
                 <div class="deck-area">
                     <div class="deck-container">
-                        <div id="mystic-card-deck" class="card-deck-visual" role="button" aria-label="Tirar uma carta do destino">
+                        <div id="mystic-card-deck" class="card-deck-visual" role="button" tabindex="0" aria-label="Tirar uma carta do destino">
                             <!-- Layered cards for depth -->
                             <div class="deck-card-layer layer-1"></div>
                             <div class="deck-card-layer layer-2"></div>
@@ -320,6 +338,7 @@
                 </div>
             </form>
         </div>
+    </dialog>
     <!-- Dialog for Grimório dos Pecados -->
     <dialog id="grimoire-dialog" closedby="any" aria-labelledby="grimoire-heading">
         <div class="dialog-inner">

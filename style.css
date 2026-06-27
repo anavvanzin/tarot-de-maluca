@@ -526,6 +526,64 @@ body::before {
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
+.ritual-status-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin: 0.3rem 0 0.75rem;
+}
+
+.ritual-status-pill {
+    min-width: 0;
+    padding: 0.55rem 0.45rem;
+    border: 1px solid rgba(217, 180, 97, 0.45);
+    background:
+        linear-gradient(180deg, rgba(217, 180, 97, 0.12), rgba(17, 14, 19, 0.64)),
+        rgba(8, 6, 12, 0.58);
+    color: var(--color-paper);
+    text-align: center;
+    box-shadow: 2px 2px 0 var(--color-ink);
+    filter: url(#woodcut-roughness);
+}
+
+.ritual-status-pill .status-label {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: rgba(217, 180, 97, 0.78);
+    letter-spacing: 1.4px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.ritual-status-pill strong {
+    display: block;
+    margin-top: 0.28rem;
+    overflow: hidden;
+    color: var(--color-gold);
+    font-family: var(--font-heading);
+    font-size: clamp(0.78rem, 2.6vw, 0.98rem);
+    letter-spacing: 0;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.last-omen-strip {
+    margin: 0 0 0.85rem;
+    padding: 0.55rem 0.75rem;
+    border-left: 2px solid var(--color-crimson);
+    border-right: 2px solid var(--color-crimson);
+    background: rgba(166, 36, 36, 0.1);
+    color: rgba(245, 242, 235, 0.76);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-style: italic;
+    line-height: 1.25;
+    text-align: center;
+}
+
 /* Deck visual stacking */
 .deck-area {
     display: flex;
@@ -553,6 +611,12 @@ body::before {
 
 .card-deck-visual:hover {
     transform: translateY(-10px) rotateY(-5deg);
+}
+
+.card-deck-visual:focus-visible {
+    outline: 3px solid var(--color-gold);
+    outline-offset: 8px;
+    box-shadow: 0 0 0 6px rgba(217, 180, 97, 0.18);
 }
 
 .deck-card-layer {
@@ -1092,6 +1156,26 @@ body::before {
     
     .card-illustration-container {
         height: 130px;
+    }
+
+    .ritual-status-bar {
+        gap: 0.4rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .ritual-status-pill {
+        padding: 0.48rem 0.32rem;
+    }
+
+    .ritual-status-pill .status-label {
+        font-size: 0.56rem;
+        letter-spacing: 1px;
+    }
+
+    .last-omen-strip {
+        font-size: 0.88rem;
+        margin-bottom: 0.55rem;
+        padding: 0.48rem 0.58rem;
     }
 }
 
@@ -1762,7 +1846,5 @@ body.theme-cosmic .score-item.arch-gato-preto {
 .grimoire-item-confessed strong {
     color: var(--color-crimson);
 }
-
-
 
 
