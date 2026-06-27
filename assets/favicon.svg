@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="O Tarô de Maluca">
+  <rect width="64" height="64" rx="10" fill="#08060c"/>
+  <rect x="9" y="7" width="46" height="50" rx="4" fill="#f5f2eb" stroke="#d9b461" stroke-width="3"/>
+  <rect x="15" y="13" width="34" height="38" rx="2" fill="#121017" stroke="#8c6a23" stroke-width="2"/>
+  <path d="M32 16l4.1 11.9L49 32l-12.9 4.1L32 48l-4.1-11.9L15 32l12.9-4.1L32 16z" fill="#d9b461"/>
+  <circle cx="32" cy="32" r="6" fill="#a62424" stroke="#f5f2eb" stroke-width="1.5"/>
+</svg>

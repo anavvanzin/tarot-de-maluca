@@ -1,0 +1,90 @@
+- generic [ref=e1]:
+  - combobox "Seletor de Tema" [ref=e4] [cursor=pointer]:
+    - option "✨ Místico & Ouro" [selected]
+    - option "📜 Xilogravura Clássica"
+    - option "🌌 Sáfico Cósmico"
+  - generic [ref=e5]:
+    - button "Abrir grimório" [ref=e6] [cursor=pointer]:
+      - generic [ref=e7]: 📖
+    - button "Alternar som" [ref=e8] [cursor=pointer]:
+      - generic [ref=e9]: 🔔
+  - generic [ref=e10]:
+    - banner [ref=e11]:
+      - heading "O Tarô de Maluca" [level=1] [ref=e12]
+      - paragraph [ref=e13]: Revele seus pecados e sele seu destino
+      - text: 🔸 ❖ 🔸
+    - main [ref=e14]:
+      - region "Mesa de Tiragem" [active] [ref=e105]:
+        - heading "Mesa de Tiragem" [level=2] [ref=e106]
+        - generic [ref=e107]:
+          - paragraph [ref=e108]: O Destino chama por...
+          - heading "🦉 Sabrina" [level=3] [ref=e109]
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]: Modo
+            - strong [ref=e113]: Sobrevivência
+          - generic [ref=e114]:
+            - generic [ref=e115]: Arcanos
+            - strong [ref=e116]: 0/27
+          - generic [ref=e117]:
+            - generic [ref=e118]: Restam
+            - strong [ref=e119]: "27"
+        - generic [ref=e120]: A mesa ainda aguarda o primeiro presságio.
+        - button "Tirar uma carta do destino" [ref=e123] [cursor=pointer]:
+          - generic [ref=e129]: Toque para Tirar
+        - paragraph [ref=e130]: Toque no baralho para realizar a tiragem do arcano
+        - generic [ref=e131]:
+          - heading "Cálices de Essência" [level=4] [ref=e132]
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - generic [ref=e135]:
+                - text: 🦉 Sabrina
+                - generic "labrador" [ref=e136]: 🐕
+              - generic [ref=e137]:
+                - generic [ref=e138]: 🍷
+                - generic [ref=e139]: 🍷
+                - generic [ref=e140]: 🍷
+                - generic [ref=e141]: 🍷
+                - generic [ref=e142]: 🍷
+            - generic [ref=e143]:
+              - generic [ref=e144]:
+                - text: 🐍 Shai
+                - generic "gato-preto" [ref=e145]: 🐈
+              - generic [ref=e146]:
+                - generic [ref=e147]: 🍷
+                - generic [ref=e148]: 🍷
+                - generic [ref=e149]: 🍷
+                - generic [ref=e150]: 🍷
+                - generic [ref=e151]: 🍷
+            - generic [ref=e152]:
+              - generic [ref=e153]:
+                - text: 💀 Andressa
+                - generic "labrador" [ref=e154]: 🐕
+              - generic [ref=e155]:
+                - generic [ref=e156]: 🍷
+                - generic [ref=e157]: 🍷
+                - generic [ref=e158]: 🍷
+                - generic [ref=e159]: 🍷
+                - generic [ref=e160]: 🍷
+            - generic [ref=e161]:
+              - generic [ref=e162]:
+                - text: 🍷 Patrícia
+                - generic "gato-preto" [ref=e163]: 🐈
+              - generic [ref=e164]:
+                - generic [ref=e165]: 🍷
+                - generic [ref=e166]: 🍷
+                - generic [ref=e167]: 🍷
+                - generic [ref=e168]: 🍷
+                - generic [ref=e169]: 🍷
+            - generic [ref=e170]:
+              - generic [ref=e171]:
+                - text: ☀️ Ana
+                - generic "gato-preto" [ref=e172]: 🐈
+              - generic [ref=e173]:
+                - generic [ref=e174]: 🍷
+                - generic [ref=e175]: 🍷
+                - generic [ref=e176]: 🍷
+                - generic [ref=e177]: 🍷
+                - generic [ref=e178]: 🍷
+    - contentinfo [ref=e68]:
+      - paragraph [ref=e69]: Criado para rodas de fofocas e revelações místicas.

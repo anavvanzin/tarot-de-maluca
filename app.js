@@ -62,6 +62,9 @@ let toiletPassIndex = -1;
 let partnerships = {};     // Map of index -> index for Os Enamorados
 let caliceSagradoCount = 0;
 let totalRotasDrawn = 0;
+let totalCardsInSession = 0;
+let revealedCardsCount = 0;
+let lastOmenText = "A mesa ainda aguarda o primeiro presságio.";
 
 // DOM Elements
 const screenLobby = document.getElementById("screen-lobby");
@@ -75,6 +78,11 @@ const listLobbyPlayers = document.getElementById("lobby-players-list");
 const btnStartGame = document.getElementById("btn-start-game");
 
 const activePlayerNameText = document.getElementById("active-player-name");
+const ritualModeLabel = document.getElementById("ritual-mode-label");
+const ritualRevealedCount = document.getElementById("ritual-revealed-count");
+const ritualTotalCount = document.getElementById("ritual-total-count");
+const ritualDeckCount = document.getElementById("ritual-deck-count");
+const lastOmenStrip = document.getElementById("last-omen-strip");
 const visualCardDeck = document.getElementById("mystic-card-deck");
 const scoreboardPlayers = document.getElementById("scoreboard-players");
 
@@ -543,6 +551,9 @@ function setupNewGame() {
     }
 
     cardDeck = shuffle([...ALL_CARDS, ...customCards]);
+    totalCardsInSession = cardDeck.length;
+    revealedCardsCount = 0;
+    lastOmenText = "A mesa ainda aguarda o primeiro presságio.";
     activePlayerIndex = 0;
     currentCard = null;
     confessedPlayers.clear();
@@ -560,6 +571,7 @@ function setupNewGame() {
     renderActiveRules();
     updateCaliceSagradoDisplay();
     updateScoreboard();
+    updateRitualStatus();
     prepareNextTurn();
     switchScreen(screenGameplay);
 }
@@ -594,6 +606,35 @@ function prepareNextTurn() {
     
     // Highlight active player on scoreboard
     updateScoreboard();
+    updateRitualStatus();
+}
+
+function getGameModeLabel() {
+    return gameMode === 'sueca' ? 'Roda de Bar' : 'Sobrevivência';
+}
+
+function updateRitualStatus() {
+    if (ritualModeLabel) {
+        ritualModeLabel.textContent = getGameModeLabel();
+    }
+    if (ritualRevealedCount) {
+        ritualRevealedCount.textContent = String(revealedCardsCount);
+    }
+    if (ritualTotalCount) {
+        ritualTotalCount.textContent = String(totalCardsInSession);
+    }
+    if (ritualDeckCount) {
+        ritualDeckCount.textContent = String(cardDeck.length);
+    }
+    if (lastOmenStrip) {
+        lastOmenStrip.textContent = lastOmenText;
+    }
+}
+
+function formatNameList(names) {
+    if (names.length <= 1) return names[0] || "";
+    if (names.length === 2) return `${names[0]} e ${names[1]}`;
+    return `${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}`;
 }
 
 function setupMiniGameForCard(card) {
@@ -887,6 +928,8 @@ function drawCard() {
 
     playSound('draw');
     currentCard = cardDeck.pop();
+    revealedCardsCount += 1;
+    lastOmenText = `${currentCard.title} foi retirado por ${players[activePlayerIndex].name}.`;
     confessedPlayers.clear();
 
     // Populate Card details
@@ -950,6 +993,7 @@ function drawCard() {
 
     // Setup the mini-game widget if sueca mode is active
     setupMiniGameForCard(currentCard);
+    updateRitualStatus();
 
     // Reset 3D card layout rotation
     cardFlip3d.classList.remove("flipped");
@@ -1076,15 +1120,29 @@ function submitConfession() {
 
     // Record turn to game history
     const confessedList = players.filter((_, i) => confessedPlayers.has(i));
+    const confessedNames = confessedList.map(p => p.name);
     gameHistory.push({
         cardTitle: currentCard.title,
         cardText: currentCard.text,
         targetPlayer: players[activePlayerIndex].name,
-        confessed: confessedList.map(p => p.name)
+        confessed: confessedNames
     });
+
+    if (gameMode === 'sueca') {
+        const action = confessedNames.length === 1 ? "bebeu" : "beberam";
+        lastOmenText = confessedNames.length
+            ? `${currentCard.title}: ${formatNameList(confessedNames)} ${action} sob o presságio.`
+            : `${currentCard.title}: ninguém bebeu neste presságio.`;
+    } else {
+        const action = confessedNames.length === 1 ? "confessou" : "confessaram";
+        lastOmenText = confessedNames.length
+            ? `${currentCard.title}: ${formatNameList(confessedNames)} ${action}.`
+            : `${currentCard.title}: nenhuma alma confessou.`;
+    }
 
     // Update scoreboard
     updateScoreboard();
+    updateRitualStatus();
 
     // Trigger visual explosion in the center of the screen
     triggerBurst(window.innerWidth / 2, window.innerHeight / 2);
@@ -1410,6 +1468,27 @@ btnStartGame.addEventListener("click", () => {
 
 // Draw card event
 visualCardDeck.addEventListener("click", () => {
+    drawCard();
+});
+
+function isTypingTarget(element) {
+    if (!element) return false;
+    const tagName = element.tagName;
+    return element.isContentEditable || tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT" || tagName === "BUTTON";
+}
+
+function canUseDrawHotkey(event) {
+    const isDrawKey = event.key === "Enter" || event.key === " ";
+    if (!isDrawKey) return false;
+    if (!screenGameplay.classList.contains("active")) return false;
+    if (document.querySelector("dialog[open]")) return false;
+    if (isTypingTarget(document.activeElement)) return false;
+    return cardDeck.length > 0;
+}
+
+document.addEventListener("keydown", (event) => {
+    if (!canUseDrawHotkey(event)) return;
+    event.preventDefault();
     drawCard();
 });
 
