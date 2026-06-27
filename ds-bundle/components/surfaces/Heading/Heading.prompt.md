@@ -6,7 +6,7 @@ labels/section heads, with gold accents and ink/gold glows.
 ## Class API
 - `.app-header` — header block with a gold bottom rule and a decorative ornament.
   - `.mystic-title` — primary display title (Cinzel Decorative, paper, ink +
-    gold glow). Add `.large` for the game-over variant.
+    gold glow).
   - `.mystic-subtitle` — uppercase gold tagline under the title.
 - `.turn-announcement` — centered turn callout:
   - `.turn-subtitle` — small uppercase gold lead-in.

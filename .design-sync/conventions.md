@@ -52,7 +52,7 @@ HTML and the classes below.
   `.confession-btn` (`.confessed`, `.confession-mark`) · `.ranking-item` with
   `.ranking-title-badge` (`.pure` / `.doomed`).
 - **Surfaces & type**: `.intro-box`, `.standings-box`, `.confession-panel`,
-  `.game-scoreboard` containers · `.mystic-title` (`.large`), `.mystic-subtitle`,
+  `.game-scoreboard` containers · `.mystic-title`, `.mystic-subtitle`,
   `.section-title`, `.active-player-title` headings.
 
 ## Where the truth lives
