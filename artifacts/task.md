@@ -1,0 +1,21 @@
+# Checklist de Tarefas: O Tarô do Nunca
+
+- [x] Criar estrutura do projeto e pasta `assets`
+- [x] Gerar ilustrações estilo xilogravura para as cartas do tarô
+  - [x] Verso das cartas (`card-back.png`)
+  - [x] O Louco (`arcana-fool.png`)
+  - [x] O Diabo (`arcana-devil.png`)
+  - [x] A Morte (`arcana-death.png`)
+  - [x] A Torre (`arcana-tower.png`)
+  - [x] A Lua (`arcana-moon.png`)
+- [x] Implementar a estrutura semântica em `index.html`
+- [x] Criar a estilização e efeitos visuais em `style.css`
+  - [x] Design System de cores, tipografia e bordas de xilogravura
+  - [x] Layout mobile-first responsivo com painel de jogadoras
+  - [x] Efeito de flip 3D nas cartas e transições suaves de tela
+- [x] Implementar a lógica do jogo e áudio em `app.js`
+  - [x] Estruturar o banco de dados das 22 cartas de Arcanos Maiores
+  - [x] Gerenciar a máquina de estados (Lobby, Desenho, Revelação, Fim)
+  - [x] Adicionar sintetizador Web Audio API para cliques e efeitos místicos
+- [x] Testar e validar o fluxo completo do jogo e responsividade
+- [x] Criar o relatório de entrega `walkthrough.md`
