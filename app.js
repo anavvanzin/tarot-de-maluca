@@ -87,6 +87,7 @@ const listConfessionPlayers = document.getElementById("confession-players-list")
 const btnSubmitConfession = document.getElementById("btn-submit-confession");
 
 const btnRestartGame = document.getElementById("btn-restart-game");
+const listGameoverRankings = document.getElementById("gameover-rankings");
 const btnToggleSound = document.getElementById("btn-toggle-sound");
 const themeSelector = document.getElementById("theme-selector");
 
