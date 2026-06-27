@@ -255,7 +255,7 @@ body::before {
 .lobby-form .input-group {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.6rem;
 }
 
 .lobby-form input[type="text"] {
@@ -333,7 +333,8 @@ body::before {
 
 /* Player Badge list */
 .players-lobby-section {
-    margin-bottom: 1.5rem;
+    margin-top: 2.2rem;
+    margin-bottom: 2rem;
     flex-grow: 1;
 }
 
@@ -393,27 +394,54 @@ body::before {
 .archetype-selector {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 1.2rem;
-    padding: 0.5rem;
-    border: 1px solid rgba(219, 180, 97, 0.15);
-    background-color: rgba(0, 0, 0, 0.15);
+    gap: 0.6rem;
+    margin-bottom: 1.6rem;
+    padding: 1rem 1.2rem;
+    border: 2px solid rgba(219, 180, 97, 0.25);
+    background-color: rgba(20, 15, 10, 0.45);
+    filter: url(#woodcut-roughness);
 }
 
 .game-mode-selector-section {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-top: 1.2rem;
-    margin-bottom: 1.2rem;
-    padding: 0.6rem;
-    border: 1px solid rgba(219, 180, 97, 0.15);
-    background-color: rgba(0, 0, 0, 0.15);
+    gap: 0.6rem;
+    margin-top: 2.2rem;
+    margin-bottom: 2.2rem;
+    padding: 1rem 1.2rem;
+    border: 2px solid rgba(219, 180, 97, 0.25);
+    background-color: rgba(20, 15, 10, 0.45);
+    filter: url(#woodcut-roughness);
 }
 
 .game-mode-options {
     display: flex;
+    flex-direction: column;
     gap: 0.8rem;
+}
+
+.game-mode-card .custom-radio {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.8rem 1rem;
+    gap: 0.3rem;
+}
+
+.mode-title {
+    font-size: 1.05rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+.mode-description {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.65);
+    text-transform: none;
+    letter-spacing: normal;
+    text-align: left;
+    line-height: 1.35;
 }
 
 .selector-label {
@@ -462,10 +490,14 @@ body::before {
 }
 
 .radio-label input:checked + .custom-radio {
-    background-color: var(--color-gold);
-    color: var(--color-ink);
+    background: linear-gradient(135deg, rgba(219, 180, 97, 0.18) 0%, rgba(166, 126, 50, 0.35) 100%);
+    color: var(--color-gold);
     border-color: var(--color-gold);
-    box-shadow: 0 0 10px rgba(219, 180, 97, 0.4);
+    box-shadow: 0 0 15px rgba(219, 180, 97, 0.4);
+}
+
+.radio-label input:checked + .custom-radio .mode-description {
+    color: rgba(255, 255, 255, 0.85);
 }
 
 /* ==========================================================================
