@@ -10,9 +10,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <!-- Sound toggler and global decoration -->
+<body class="theme-gold">
+    <!-- Theme and Sound togglers and global decoration -->
     <div class="mystic-bg-overlay"></div>
+    <div class="theme-control-wrapper">
+        <select id="theme-selector" class="theme-select" aria-label="Seletor de Tema" title="Alternar tema místico">
+            <option value="gold">✨ Místico & Ouro</option>
+            <option value="classic">📜 Xilogravura Clássica</option>
+            <option value="cosmic">🌌 Sáfico Cósmico</option>
+        </select>
+    </div>
+    <canvas id="mystic-particles"></canvas>
     <div class="sound-control-wrapper">
         <button id="btn-toggle-sound" class="btn-icon" aria-label="Alternar som" title="Alternar som místico">
             <span class="sound-icon">🔔</span>
@@ -73,8 +81,9 @@
                     </ul>
                 </div>
 
-                <div class="lobby-actions">
-                    <button id="btn-start-game" class="btn-mystic btn-large disabled" disabled>Iniciar a Leitura</button>
+                <div class="lobby-actions" style="display: flex; gap: 0.8rem; width: 100%;">
+                    <button type="button" id="btn-open-forge" class="btn-mystic btn-large" style="flex-grow: 1; margin-top: 1rem; background-color: transparent; color: var(--color-gold); border-color: var(--color-gold-dark);">Forjar Arcano</button>
+                    <button id="btn-start-game" class="btn-mystic btn-large disabled" style="flex-grow: 2; margin-top: 1rem;" disabled>Iniciar a Leitura</button>
                 </div>
             </section>
 
@@ -216,6 +225,59 @@
         </defs>
     </svg>
 
-    <script src="app.js"></script>
+    <!-- Dialog for Forging Custom Card -->
+    <dialog id="custom-card-dialog" closedby="any" aria-labelledby="custom-card-heading">
+        <div class="dialog-inner">
+            <h3 id="custom-card-heading" class="section-title">Forjar Novo Arcano</h3>
+            <form id="form-custom-card" method="dialog" class="mystic-dialog-form">
+                <div class="input-group-vertical">
+                    <label for="custom-card-title" class="dialog-label">Nome do Arcano:</label>
+                    <input type="text" id="custom-card-title" placeholder="Ex: A IMPERATRIZ, A AMIZADE..." required maxlength="25" autocomplete="off">
+                </div>
+                
+                <div class="input-group-vertical" style="margin-top: 1rem;">
+                    <label for="custom-card-text" class="dialog-label">Pecado / Confissão ("Eu nunca..."):</label>
+                    <textarea id="custom-card-text" placeholder="Escreva o pecado... Ex: peguei emprestado algo e nunca mais devolvi." required maxlength="150" rows="3"></textarea>
+                </div>
+
+                <div class="archetype-selector" style="margin-top: 1rem; margin-bottom: 1.2rem;">
+                    <span class="selector-label">Símbolo do Arcano:</span>
+                    <div class="symbol-options">
+                        <label class="radio-label">
+                            <input type="radio" name="custom-symbol" value="🍷" checked>
+                            <span class="custom-radio">🍷 Cálice</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="custom-symbol" value="🌙">
+                            <span class="custom-radio">🌙 Lua</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="custom-symbol" value="🐈">
+                            <span class="custom-radio">🐈 Gato</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="custom-symbol" value="🐕">
+                            <span class="custom-radio">🐕 Labrador</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="custom-symbol" value="🗝️">
+                            <span class="custom-radio">🗝️ Chave</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="custom-symbol" value="💀">
+                            <span class="custom-radio">💀 Caveira</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="dialog-actions" style="display: flex; gap: 0.8rem; margin-top: 1.5rem;">
+                    <button type="button" id="btn-close-dialog" class="btn-mystic" style="flex: 1; background: transparent; color: var(--color-gold); border-color: var(--color-gold-dark);">Cancelar</button>
+                    <button type="submit" class="btn-mystic" style="flex: 1;">Selar Pacto</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
 </body>
 </html>

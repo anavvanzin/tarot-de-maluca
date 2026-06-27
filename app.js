@@ -17,12 +17,12 @@ const ALL_CARDS = [
     { id: 3, title: "A IMPERATRIZ", num: "III", image: null, text: "planejei o casamento inteiro, escolhi os nomes dos filhos e adotei três gatos na minha cabeça logo após o primeiro encontro." },
     { id: 4, title: "O IMPERADOR", num: "IV", image: null, text: "tentei dar uma aula professoral (uma versão feminina de mansplaining) sobre um assunto aleatório só para tentar impressionar." },
     { id: 5, title: "O HIEROFANTE", num: "V", image: null, text: "julguei silenciosamente o gosto musical, o estilo de roupa ou o mapa astral de alguma amiga desta roda." },
-    { id: 6, title: "OS ENAMORADOS", num: "VI", image: null, text: "comprei um presente super elaborado ou fiz uma playlist gigante com significados ocultos para alguém com quem só saí duas vezes." },
+    { id: 6, title: "OS ENAMORADOS", num: "VI", image: null, text: "comprei um presente super elaborado ou fiz uma playlist gigante com significados ocultos para alguém com quem só saí duas vezes.", special: "Pacto de Enamorados: Se exatamente duas jogadoras confessarem, elas não perdem essência. Caso contrário, perdem 1 cálice." },
     { id: 7, title: "O CARRO", num: "VII", image: null, text: "errei a entrada da rua ou passei do ponto fofocando tanto com as amigas que esqueci para onde estava dirigindo." },
     { id: 8, title: "A JUSTIÇA", num: "VIII", image: null, text: "peguei um ranço eterno e inabalável da ex de uma amiga próxima por pura solidariedade feminina." },
     { id: 9, title: "O EREMITA", num: "IX", image: null, text: "sumi do rolê ou cancelei de última hora para ficar isolada em casa com meus bichinhos assistindo série sáfica." },
     { id: 10, title: "A RODA DA FORTUNA", num: "X", image: null, text: "participei de um grupo de amigas onde quase todo mundo já tinha ficado com todo mundo em algum momento do passado.", special: "Roda da Fortuna: O destino gira! Quem confessar desta vez recupera 1 cálice de essência; quem não confessar perde 1 cálice." },
-    { id: 11, title: "A FORÇA", num: "XI", image: null, text: "tentei carregar algo super pesado ou fazer trabalho manual complexo sozinha só para provar a mim mesma que mulheres conseguem tudo." },
+    { id: 11, title: "A FORÇA", num: "XI", image: null, text: "tentei carregar algo super pesado ou fazer trabalho manual complexo sozinha só para provar a mim mesma que mulheres conseguem tudo.", special: "Força Singular: Se apenas uma jogadora confessar, ela não perde essência. Se duas ou mais confessarem, todas perdem 1 cálice." },
     { id: 12, title: "O ENFORCADO", num: "XII", image: null, text: "fiquei presa em um chove-não-molha sáfico por meses sabendo lá no fundo que não daria em nada." },
     { id: 13, title: "A MORTE", num: "XIII", image: "assets/arcana-death.png", text: "dei um 'mute' ou deixei de seguir mais de 10 conhecidas do círculo sáfico local de uma vez só para preservar minha paz de espírito." },
     { id: 14, title: "A TEMPERANÇA", num: "XIV", image: null, text: "tentei acalmar uma fofoca na roda contando um segredo mas finalizando com a frase clássica: 'mas não espalha, hein'." },
@@ -31,7 +31,7 @@ const ALL_CARDS = [
     { id: 17, title: "A ESTRELA", num: "XVII", image: null, text: "treinei uma DR (discussão de relação) inteira na minha mente ou no espelho do banheiro fingindo estar conversando com a pessoa." },
     { id: 18, title: "A LUA", num: "XVIII", image: "assets/arcana-moon.png", text: "passei mais de duas horas stalkeando o perfil de um crush até descobrir qual era o signo solar, lunar e ascendente dela." },
     { id: 19, title: "O SOL", num: "XIX", image: null, text: "tentei paquerar alguém de forma direta e a pessoa achou que eu estava apenas sendo 'uma amiga extremamente simpática e fofa'." },
-    { id: 20, title: "O JULGAMENTO", num: "XX", image: null, text: "mandei mensagem ou print reclamando das atitudes de um crush ou amiga para a própria pessoa por puro engano." },
+    { id: 20, title: "O JULGAMENTO", num: "XX", image: null, text: "mandei mensagem ou print reclamando das atitudes de um crush ou amiga para a própria pessoa por puro engano.", special: "Julgamento Coletivo: Se a maioria das jogadoras confessar, ninguém perde essência. Se for metade ou menos, as confessadas perdem 2 cálices." },
     { id: 21, title: "O MUNDO", num: "XXI", image: null, text: "aluguei um caminhão de mudança ou comecei a dividir teto (o clássico meme U-Haul) antes de completar seis meses de relacionamento." },
     { id: 22, title: "A ANDRESSA", num: "XXII", image: "assets/arcana-andressa.png", text: "comprei mais uma blusa preta, fiz outra tatuagem de dragão ou passei a noite inteira bebendo martini fingindo desinteresse só para chamar a atenção da garota." },
     { id: 23, title: "A PATRÍCIA", num: "XXIII", image: "assets/arcana-patricia.png", text: "passei duas horas fazendo um delineado gótico impecável só para ir ao mercado, ou comprei uma camiseta de streetwear três tamanhos maior só para parecer descolada." },
@@ -52,6 +52,7 @@ let cardDeck = [];
 let activePlayerIndex = 0;
 let currentCard = null;
 let confessedPlayers = new Set(); // holds indexes of players who confessed for current card
+let currentTheme = 'gold';
 
 // DOM Elements
 const screenLobby = document.getElementById("screen-lobby");
@@ -76,9 +77,18 @@ const arcanaStatementText = document.getElementById("arcana-statement");
 const listConfessionPlayers = document.getElementById("confession-players-list");
 const btnSubmitConfession = document.getElementById("btn-submit-confession");
 
-const listGameoverRankings = document.getElementById("gameover-rankings");
 const btnRestartGame = document.getElementById("btn-restart-game");
 const btnToggleSound = document.getElementById("btn-toggle-sound");
+const themeSelector = document.getElementById("theme-selector");
+
+const customCardDialog = document.getElementById("custom-card-dialog");
+const formCustomCard = document.getElementById("form-custom-card");
+const btnOpenForge = document.getElementById("btn-open-forge");
+const btnCloseDialog = document.getElementById("btn-close-dialog");
+const inputCustomTitle = document.getElementById("custom-card-title");
+const inputCustomText = document.getElementById("custom-card-text");
+
+let customCards = [];
 
 // ==========================================================================
 // SOUND SYNTHESIZER (Web Audio API)
@@ -87,6 +97,158 @@ const btnToggleSound = document.getElementById("btn-toggle-sound");
 function initAudio() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+// Ambient Synthesizer Node references
+let ambientDroneNode1 = null;
+let ambientDroneNode2 = null;
+let ambientGainNode = null;
+let ambientLfoNode = null;
+let ambientTimer = null;
+
+function startAmbientDrone() {
+    if (!soundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+
+    if (ambientDroneNode1) return;
+
+    const t = audioCtx.currentTime;
+
+    ambientGainNode = audioCtx.createGain();
+    ambientGainNode.gain.setValueAtTime(0, t);
+    ambientGainNode.gain.linearRampToValueAtTime(0.04, t + 3.0);
+    ambientGainNode.connect(audioCtx.destination);
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(120, t);
+    filter.Q.setValueAtTime(4, t);
+    filter.connect(ambientGainNode);
+
+    ambientDroneNode1 = audioCtx.createOscillator();
+    ambientDroneNode1.type = 'sine';
+    ambientDroneNode1.frequency.setValueAtTime(55, t);
+
+    ambientDroneNode2 = audioCtx.createOscillator();
+    ambientDroneNode2.type = 'sine';
+    ambientDroneNode2.frequency.setValueAtTime(55.4, t);
+
+    ambientLfoNode = audioCtx.createOscillator();
+    ambientLfoNode.frequency.setValueAtTime(0.08, t);
+    const lfoGain = audioCtx.createGain();
+    lfoGain.gain.setValueAtTime(25, t);
+
+    ambientLfoNode.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+
+    ambientDroneNode1.connect(filter);
+    ambientDroneNode2.connect(filter);
+
+    ambientDroneNode1.start(t);
+    ambientDroneNode2.start(t);
+    ambientLfoNode.start(t);
+
+    scheduleWindChimes();
+}
+
+function stopAmbientDrone() {
+    const t = audioCtx ? audioCtx.currentTime : 0;
+    if (ambientGainNode) {
+        ambientGainNode.gain.cancelScheduledValues(t);
+        ambientGainNode.gain.setValueAtTime(ambientGainNode.gain.value, t);
+        ambientGainNode.gain.linearRampToValueAtTime(0, t + 1.0);
+        
+        const node1 = ambientDroneNode1;
+        const node2 = ambientDroneNode2;
+        const lfo = ambientLfoNode;
+
+        setTimeout(() => {
+            try {
+                if (node1) node1.stop();
+                if (node2) node2.stop();
+                if (lfo) lfo.stop();
+            } catch(e) {}
+        }, 1200);
+    }
+    ambientDroneNode1 = null;
+    ambientDroneNode2 = null;
+    ambientLfoNode = null;
+    ambientGainNode = null;
+    if (ambientTimer) {
+        clearTimeout(ambientTimer);
+        ambientTimer = null;
+    }
+}
+
+function scheduleWindChimes() {
+    if (!soundEnabled) return;
+    const nextTime = 12000 + Math.random() * 12000;
+    ambientTimer = setTimeout(() => {
+        playMysticChime();
+        scheduleWindChimes();
+    }, nextTime);
+}
+
+function playMysticChime() {
+    if (!soundEnabled || !audioCtx) return;
+    const t = audioCtx.currentTime;
+
+    const scale = currentTheme === 'cosmic'
+        ? [196.00, 220.00, 261.63, 311.13, 392.00, 440.00, 493.88] // C minor/mystical pentatonic
+        : currentTheme === 'classic'
+        ? [146.83, 164.81, 196.00, 220.00, 293.66, 329.63] // Deep G/A minor pentatonic
+        : [220, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25]; // A minor pentatonic
+    const notesCount = Math.floor(Math.random() * 2) + 2;
+    
+    let noteOffset = 0;
+    for (let i = 0; i < notesCount; i++) {
+        const freq = scale[Math.floor(Math.random() * scale.length)];
+        const delay = t + noteOffset;
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, delay);
+        
+        gain.gain.setValueAtTime(0, delay);
+        gain.gain.linearRampToValueAtTime(0.06, delay + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, delay + 1.2);
+        
+        osc.start(delay);
+        osc.stop(delay + 1.5);
+        
+        noteOffset += 0.25 + Math.random() * 0.15;
+    }
+}
+
+function updateAmbientDroneFrequency() {
+    if (!audioCtx || !ambientDroneNode1 || !ambientDroneNode2 || !ambientGainNode) return;
+    const t = audioCtx.currentTime;
+    
+    if (currentTheme === 'cosmic') {
+        // Space pad: A1 (55Hz) and E2 (82.4Hz)
+        ambientDroneNode1.frequency.exponentialRampToValueAtTime(55, t + 2.0);
+        ambientDroneNode2.frequency.exponentialRampToValueAtTime(82.4, t + 2.0);
+        ambientGainNode.gain.linearRampToValueAtTime(0.05, t + 2.0);
+    } else if (currentTheme === 'classic') {
+        // Deep organic hum: G1 (49Hz) and G1.3 (49.3Hz)
+        ambientDroneNode1.frequency.exponentialRampToValueAtTime(49, t + 2.0);
+        ambientDroneNode2.frequency.exponentialRampToValueAtTime(49.3, t + 2.0);
+        ambientGainNode.gain.linearRampToValueAtTime(0.06, t + 2.0);
+    } else {
+        // Gold/Default: A1 (55Hz) and A1.4 (55.4Hz)
+        ambientDroneNode1.frequency.exponentialRampToValueAtTime(55, t + 2.0);
+        ambientDroneNode2.frequency.exponentialRampToValueAtTime(55.4, t + 2.0);
+        ambientGainNode.gain.linearRampToValueAtTime(0.04, t + 2.0);
     }
 }
 
@@ -99,6 +261,9 @@ function playSound(type) {
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
+    
+    // Auto-start ambient drone when user interacts
+    startAmbientDrone();
 
     const t = audioCtx.currentTime;
 
@@ -256,7 +421,7 @@ function switchScreen(toScreen) {
 
 function setupNewGame() {
     players = players.map(p => ({ ...p, lives: MAX_LIVES }));
-    cardDeck = shuffle([...ALL_CARDS]);
+    cardDeck = shuffle([...ALL_CARDS, ...customCards]);
     activePlayerIndex = 0;
     currentCard = null;
     confessedPlayers.clear();
@@ -308,8 +473,23 @@ function drawCard() {
     // Card illustration logic
     arcanaIllustration.className = 'card-illustration';
     if (currentCard.image) {
-        arcanaIllustration.style.backgroundImage = `url('${currentCard.image}')`;
+        let imgUrl = currentCard.image;
+        if (currentCard.id >= 22 && currentCard.id <= 26) {
+            const playerNamesMap = {
+                22: 'andressa',
+                23: 'patricia',
+                24: 'sabrina',
+                25: 'shai',
+                26: 'ana'
+            };
+            imgUrl = `assets/${playerNamesMap[currentCard.id]}-${currentTheme}.png`;
+        }
+        arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
+    } else if (currentCard.isCustom) {
+        arcanaIllustration.style.backgroundImage = 'none';
+        arcanaIllustration.innerHTML = `<div class="custom-card-symbol-badge">${currentCard.customSymbol}</div>`;
     } else {
+        arcanaIllustration.innerHTML = '';
         arcanaIllustration.classList.add('placeholder-art');
         arcanaIllustration.style.backgroundImage = 'none';
     }
@@ -358,15 +538,40 @@ function drawCard() {
 function submitConfession() {
     playSound('click');
 
-    // Apply lives deduction or Roda da Fortuna specials
+    // Apply lives deduction or specials
+    const totalConfessed = confessedPlayers.size;
+    const majorityThreshold = players.length / 2;
+
     players.forEach((player, idx) => {
         if (currentCard.id === 10) { // Roda da Fortuna special
             if (confessedPlayers.has(idx)) {
-                // gains life up to max
                 player.lives = Math.min(MAX_LIVES, player.lives + 1);
             } else {
-                // loses 1 life
                 player.lives = Math.max(0, player.lives - 1);
+            }
+        } else if (currentCard.id === 6) { // Os Enamorados special
+            if (totalConfessed === 2) {
+                // Protected!
+            } else {
+                if (confessedPlayers.has(idx)) {
+                    player.lives = Math.max(0, player.lives - 1);
+                }
+            }
+        } else if (currentCard.id === 11) { // A Força special
+            if (totalConfessed === 1) {
+                // Protected!
+            } else {
+                if (confessedPlayers.has(idx)) {
+                    player.lives = Math.max(0, player.lives - 1);
+                }
+            }
+        } else if (currentCard.id === 20) { // O Julgamento special
+            if (totalConfessed > majorityThreshold) {
+                // Protected!
+            } else {
+                if (confessedPlayers.has(idx)) {
+                    player.lives = Math.max(0, player.lives - 2);
+                }
             }
         } else { // Standard card
             if (confessedPlayers.has(idx)) {
@@ -403,6 +608,7 @@ function updateScoreboard() {
     players.forEach((player, idx) => {
         const item = document.createElement("div");
         item.className = "score-item";
+        item.classList.add(`arch-${player.archetype}`);
         if (idx === activePlayerIndex) {
             item.classList.add("active-turn");
         }
@@ -598,8 +804,219 @@ btnToggleSound.addEventListener("click", () => {
     if (soundEnabled) {
         initAudio();
         playSound('click');
+        startAmbientDrone();
+    } else {
+        stopAmbientDrone();
     }
 });
 
-// Initialize Lobby UI
+// Forjar card listeners
+if (btnOpenForge) {
+    btnOpenForge.addEventListener("click", () => {
+        playSound('click');
+        customCardDialog.showModal();
+    });
+}
+
+if (btnCloseDialog) {
+    btnCloseDialog.addEventListener("click", () => {
+        playSound('click');
+        customCardDialog.close();
+    });
+}
+
+// Fallback for light-dismiss (clicking outside the dialog)
+if (customCardDialog && !('closedBy' in HTMLDialogElement.prototype)) {
+    customCardDialog.addEventListener('click', (event) => {
+        if (event.target !== customCardDialog) return;
+        const rect = customCardDialog.getBoundingClientRect();
+        const isDialogContent = (
+            rect.top <= event.clientY &&
+            event.clientY <= rect.top + rect.height &&
+            rect.left <= event.clientX &&
+            event.clientX <= rect.left + rect.width
+        );
+        if (isDialogContent) return;
+        customCardDialog.close();
+    });
+}
+
+if (formCustomCard) {
+    formCustomCard.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const title = inputCustomTitle.value.trim().toUpperCase();
+        const text = inputCustomText.value.trim();
+        const symbol = document.querySelector('input[name="custom-symbol"]:checked').value;
+        
+        if (!title || !text) return;
+        
+        const newCard = {
+            id: 100 + customCards.length,
+            title: title,
+            num: "🔮",
+            image: null,
+            text: text,
+            isCustom: true,
+            customSymbol: symbol
+        };
+        
+        customCards.push(newCard);
+        
+        playSound('confess');
+        
+        inputCustomTitle.value = '';
+        inputCustomText.value = '';
+        customCardDialog.close();
+    });
+}
+
+// ==========================================================================
+// MYSTIC PARTICLES SYSTEM (HTML5 Canvas)
+// ==========================================================================
+
+class MysticParticle {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.reset();
+    }
+
+    reset() {
+        this.x = Math.random() * this.canvas.width;
+        this.y = this.canvas.height + Math.random() * 50;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = -(Math.random() * 0.8 + 0.3);
+        this.alpha = Math.random() * 0.5 + 0.2;
+        this.decay = Math.random() * 0.003 + 0.001;
+        this.isRune = Math.random() < 0.07;
+        this.runeSymbol = this.isRune ? ['☽', '⛧', '🍷', '🗝️', '⭐', '👁️'][Math.floor(Math.random() * 6)] : '';
+        
+        if (currentTheme === 'cosmic') {
+            this.color = this.isRune ? '218, 112, 214' : '186, 85, 211'; // orchid/purple
+            if (Math.random() < 0.15) this.color = '255, 46, 99'; // cosmic pink
+        } else if (currentTheme === 'classic') {
+            this.color = '110, 80, 50'; // charcoal / sepia ash
+            if (Math.random() < 0.1) this.color = '166, 36, 36'; // dark crimson ash
+        } else {
+            this.color = this.isRune ? '219, 180, 97' : '217, 180, 97'; // gold
+            if (Math.random() < 0.1) this.color = '166, 36, 36'; // crimson spark
+        }
+    }
+
+    update(mouseX, mouseY) {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= this.decay;
+
+        if (mouseX !== undefined && mouseY !== undefined) {
+            const dx = this.x - mouseX;
+            const dy = this.y - mouseY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 80) {
+                const force = (80 - dist) / 80;
+                this.x += (dx / dist) * force * 1.5;
+            }
+        }
+
+        if (this.alpha <= 0 || this.x < 0 || this.x > this.canvas.width || this.y < -20) {
+            this.reset();
+        }
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        if (this.isRune) {
+            ctx.fillStyle = `rgb(${this.color})`;
+            ctx.font = `${Math.floor(this.size * 5 + 6)}px 'Almendra', Georgia, serif`;
+            ctx.fillText(this.runeSymbol, this.x, this.y);
+        } else {
+            ctx.fillStyle = `rgb(${this.color})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+}
+
+let canvasParticles = null;
+let ctxParticles = null;
+let particles = [];
+let mouseX = undefined;
+let mouseY = undefined;
+
+function initParticles() {
+    canvasParticles = document.getElementById("mystic-particles");
+    if (!canvasParticles) return;
+    
+    ctxParticles = canvasParticles.getContext("2d");
+    
+    function resizeCanvas() {
+        canvasParticles.width = window.innerWidth;
+        canvasParticles.height = window.innerHeight;
+    }
+    
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    particles = [];
+    const count = Math.min(60, Math.floor(window.innerWidth / 15));
+    for (let i = 0; i < count; i++) {
+        particles.push(new MysticParticle(canvasParticles));
+    }
+
+    window.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    window.addEventListener("mouseleave", () => {
+        mouseX = undefined;
+        mouseY = undefined;
+    });
+
+    animateParticles();
+}
+
+function animateParticles() {
+    if (!ctxParticles) return;
+    ctxParticles.clearRect(0, 0, canvasParticles.width, canvasParticles.height);
+    particles.forEach(p => {
+        p.update(mouseX, mouseY);
+        p.draw(ctxParticles);
+    });
+    requestAnimationFrame(animateParticles);
+}
+
+// Initialize Lobby UI and Particles
 renderLobbyPlayers();
+initParticles();
+
+// Initialize Theme Selector
+if (themeSelector) {
+    currentTheme = themeSelector.value;
+    document.body.className = `theme-${currentTheme}`;
+    themeSelector.addEventListener("change", (e) => {
+        currentTheme = e.target.value;
+        document.body.className = `theme-${currentTheme}`;
+        playSound('click');
+        
+        // Update active player card image if revealed
+        if (currentCard && (currentCard.id >= 22 && currentCard.id <= 26)) {
+            const playerNamesMap = {
+                22: 'andressa',
+                23: 'patricia',
+                24: 'sabrina',
+                25: 'shai',
+                26: 'ana'
+            };
+            const imgUrl = `assets/${playerNamesMap[currentCard.id]}-${currentTheme}.png`;
+            arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
+        }
+        
+        updateAmbientDroneFrequency();
+        updateScoreboard();
+    });
+}
