@@ -1,0 +1,33 @@
+<!-- @dsCard group="Forms" subtitle="Segmented radio toggle (gold when selected)" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../styles.css">
+<style>body{background:var(--color-velvet);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem}.wrap{width:340px}</style>
+</head>
+<body>
+<svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs>
+  <filter id="woodcut-roughness" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs></svg>
+
+<div class="wrap">
+  <div class="archetype-selector">
+    <span class="selector-label">Temperamento</span>
+    <div class="archetype-options">
+      <label class="radio-label">
+        <input type="radio" name="archetype" value="labrador" checked>
+        <span class="custom-radio">🐕 Labrador</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="archetype" value="gato-preto">
+        <span class="custom-radio">🐈 Gato Preto</span>
+      </label>
+    </div>
+  </div>
+</div>
+</body>
+</html>

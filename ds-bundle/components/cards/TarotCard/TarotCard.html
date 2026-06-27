@@ -1,0 +1,40 @@
+<!-- @dsCard group="Cards" subtitle="3D flip arcana card · front face" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../styles.css">
+<style>body{background:var(--color-velvet);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem}</style>
+</head>
+<body>
+<svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs>
+  <filter id="woodcut-roughness" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs></svg>
+
+<div class="reveal-card-viewport">
+  <div class="tarot-card-3d flipped">
+    <div class="card-side back">
+      <div class="card-inner-border"><div class="card-art-back"></div></div>
+    </div>
+    <div class="card-side front">
+      <div class="card-inner-border">
+        <div class="card-header-info">
+          <span class="arcana-num">XVI</span>
+          <h3 class="arcana-name">O DIABO</h3>
+        </div>
+        <div class="card-illustration-container">
+          <div class="card-illustration" style="background-image:url('../../../assets/arcana-devil.png')"></div>
+        </div>
+        <div class="card-statement-container">
+          <p class="statement-prefix">Eu nunca...</p>
+          <blockquote class="statement-text">"Stalkeei as redes sociais de alguém até achar postagens de cinco anos atrás."</blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
