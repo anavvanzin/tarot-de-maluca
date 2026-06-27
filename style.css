@@ -23,6 +23,7 @@
     --transition-slow: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.2);
     --transition-medium: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     --transition-fast: 0.2s ease;
+    --transition-press: 0.22s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* ==========================================================================
@@ -44,7 +45,7 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     overflow-x: hidden;
     position: relative;
 }
@@ -96,11 +97,11 @@ body::before {
 .app-container {
     width: 100%;
     max-width: 520px;
-    margin: 1.5rem auto;
-    padding: 2rem 1.8rem;
+    margin: 0.85rem auto;
+    padding: 1.35rem 1.8rem 1.6rem;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 3rem);
+    min-height: calc(100vh - 1.7rem);
     background-color: var(--color-obsidian);
     border: 3px double var(--color-gold);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95),
@@ -111,14 +112,29 @@ body::before {
     background-size: 8px 8px;
 }
 
+body[data-screen="gameplay"] .app-header,
+body[data-screen="reveal"] .app-header {
+    display: none;
+}
+
+body[data-screen="gameplay"] .app-container,
+body[data-screen="reveal"] .app-container {
+    padding-top: 4.25rem;
+}
+
+body[data-screen="gameplay"] .screens-container,
+body[data-screen="reveal"] .screens-container {
+    margin-top: 0;
+}
+
 /* Screens setup */
 .screens-container {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     position: relative;
-    margin: 1.5rem 0;
+    margin: 0.9rem 0 0.75rem;
 }
 
 .game-screen {
@@ -158,7 +174,7 @@ body::before {
 
 /* Diamond design ornament under header */
 .app-header::after {
-    content: "🔸 ❖ 🔸";
+    content: "◇ ❖ ◇";
     position: absolute;
     bottom: -10px;
     left: 50%;
@@ -393,10 +409,37 @@ body::before {
 .players-list-badge {
     list-style: none;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-    gap: 0.7rem;
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: 0.75rem;
     justify-content: center;
     padding: 0.15rem 0 0;
+}
+
+.btn-add-guest-player {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 0.78rem;
+    border: 1px dashed rgba(217, 180, 97, 0.55);
+    border-radius: 8px;
+    background: rgba(217, 180, 97, 0.055);
+    color: rgba(245, 242, 235, 0.82);
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    transition: transform var(--transition-press), border-color var(--transition-press), background-color var(--transition-press), color var(--transition-press);
+}
+
+.btn-add-guest-player:hover {
+    border-color: var(--color-gold);
+    background: rgba(217, 180, 97, 0.1);
+    color: var(--color-gold);
+}
+
+.btn-add-guest-player:active {
+    transform: scale(0.985);
 }
 
 .empty-list-msg {
@@ -406,17 +449,17 @@ body::before {
 }
 
 .player-badge {
-    min-height: 108px;
+    min-height: 132px;
     background:
         radial-gradient(circle at 50% 22%, rgba(217, 180, 97, 0.12), transparent 36%),
         rgba(255, 255, 255, 0.035);
     color: var(--color-paper);
-    padding: 0.65rem 0.45rem 0.5rem;
+    padding: 0.78rem 0.52rem 0.62rem;
     display: inline-flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.25rem;
+    gap: 0.34rem;
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 0.82rem;
@@ -473,14 +516,14 @@ body::before {
 }
 
 .player-avatar {
-    width: 46px;
-    height: 46px;
+    width: 62px;
+    height: 62px;
     font-size: 1rem;
 }
 
 .active-player-avatar {
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
     font-size: 1rem;
 }
 
@@ -525,27 +568,48 @@ body::before {
 .player-archetype {
     color: rgba(217, 180, 97, 0.86);
     font-family: var(--font-heading);
-    font-size: 0.52rem;
-    line-height: 1.1;
-    letter-spacing: 0.8px;
+    font-size: 0.54rem;
+    line-height: 1.16;
+    letter-spacing: 0.7px;
     text-transform: uppercase;
-    white-space: nowrap;
     border: 1px solid rgba(217, 180, 97, 0.24);
-    border-radius: 999px;
-    padding: 0.12rem 0.34rem;
+    border-radius: 8px;
+    padding: 0.18rem 0.34rem;
     background: rgba(217, 180, 97, 0.06);
+    display: grid;
+    gap: 0.06rem;
+    width: 100%;
+}
+
+.player-archetype strong,
+.player-archetype small {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.player-archetype small {
+    color: rgba(245, 242, 235, 0.66);
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 /* Archetype Labrador/Cat Selector styling */
 .archetype-selector {
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.7rem;
     margin: 0;
-    padding: 0.75rem;
+    padding: 0.8rem;
     border: 1px solid rgba(219, 180, 97, 0.24);
     border-radius: 8px;
     background: rgba(20, 15, 10, 0.26);
+}
+
+.lobby-temperament-panel {
+    margin-top: -0.18rem;
 }
 
 .game-mode-selector-section {
@@ -629,11 +693,13 @@ body::before {
 
 .radio-label .custom-radio {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     width: 100%;
-    padding: 0.6rem;
+    min-height: 58px;
+    padding: 0.62rem 0.58rem;
     border: 1px solid rgba(140, 106, 35, 0.82);
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.025);
@@ -641,7 +707,22 @@ body::before {
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 0.9rem;
-    transition: all var(--transition-fast);
+    transition: transform var(--transition-press), border-color var(--transition-press), background-color var(--transition-press), box-shadow var(--transition-press);
+    text-align: center;
+}
+
+.archetype-selector .custom-radio {
+    flex-direction: column;
+    gap: 0.18rem;
+}
+
+.radio-label .custom-radio small {
+    color: rgba(245, 242, 235, 0.68);
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: 0;
 }
 
 .radio-label input:checked + .custom-radio {
@@ -967,13 +1048,13 @@ body::before {
     justify-content: center;
     align-items: center;
     perspective: 1200px;
-    margin: 0.5rem 0 1.5rem 0;
-    height: 380px;
+    margin: 0.1rem 0 0.8rem;
+    height: clamp(280px, 42vh, 350px);
 }
 
 .tarot-card-3d {
-    width: 250px;
-    height: 370px;
+    width: min(238px, 72vw);
+    height: min(350px, 52vh);
     position: relative;
     transform-style: preserve-3d;
     transition: transform var(--transition-slow);
@@ -992,7 +1073,7 @@ body::before {
     border: 4px solid var(--color-gold); /* Gold-foiled cards */
     background-color: var(--color-paper);
     color: var(--color-ink);
-    padding: 0.6rem;
+    padding: 0.52rem;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8),
                 0 0 30px rgba(219, 180, 97, 0.1);
 }
@@ -1014,7 +1095,7 @@ body::before {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding: 0.6rem;
+    padding: 0.5rem;
     position: relative;
 }
 
@@ -1036,8 +1117,8 @@ body::before {
 .card-header-info {
     text-align: center;
     border-bottom: 2px solid var(--color-ink);
-    padding-bottom: 0.4rem;
-    margin-bottom: 0.6rem;
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.45rem;
 }
 
 .arcana-num {
@@ -1051,13 +1132,13 @@ body::before {
 
 .arcana-name {
     font-family: var(--font-heading-fancy);
-    font-size: 1.3rem;
+    font-size: 1.08rem;
     color: var(--color-ink);
     margin-top: 0.1rem;
 }
 
 .card-illustration-container {
-    height: 165px;
+    height: clamp(120px, 19vh, 152px);
     border: 2px solid var(--color-ink);
     margin-bottom: 0.6rem;
     overflow: hidden;
@@ -1083,7 +1164,7 @@ body::before {
 }
 
 .card-illustration.placeholder-art::before {
-    content: "🔮";
+    content: "✶";
     font-size: 3rem;
     filter: drop-shadow(0 0 5px rgba(219,180,97,0.5));
 }
@@ -1095,7 +1176,7 @@ body::before {
     justify-content: center;
     text-align: center;
     border-top: 1px dashed var(--color-ink);
-    padding-top: 0.5rem;
+    padding-top: 0.42rem;
 }
 
 .statement-prefix {
@@ -1110,9 +1191,9 @@ body::before {
 
 .statement-text {
     font-family: var(--font-body);
-    font-size: 1.1rem;
+    font-size: 0.98rem;
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.24;
     font-style: italic;
     color: var(--color-ink);
 }
@@ -1120,7 +1201,7 @@ body::before {
 /* Confession panel styles */
 .confession-panel {
     border-top: 2px solid var(--color-gold-dark);
-    padding-top: 1.2rem;
+    padding-top: 0.9rem;
     text-align: center;
 }
 
@@ -1135,7 +1216,7 @@ body::before {
 .confession-subtitle {
     font-size: 0.9rem;
     color: #c7c3bd;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .confession-grid {
@@ -1150,18 +1231,22 @@ body::before {
     background-color: rgba(255, 255, 255, 0.04);
     border: 2px solid var(--color-gold-dark);
     color: var(--color-paper);
-    padding: 0.7rem;
+    min-height: 94px;
+    padding: 0.62rem 0.52rem;
     cursor: pointer;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 1px;
-    transition: all var(--transition-fast);
+    transition: transform var(--transition-press), border-color var(--transition-press), background-color var(--transition-press), box-shadow var(--transition-press);
     filter: url(#woodcut-roughness);
-    display: flex;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.18rem 0.46rem;
+    text-align: left;
 }
 
 .confession-player-name {
@@ -1169,6 +1254,18 @@ body::before {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.confession-effect {
+    grid-column: 2 / 4;
+    color: rgba(245, 242, 235, 0.62);
+    font-family: var(--font-body);
+    font-size: 0.66rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.08;
+    text-transform: none;
+    overflow-wrap: anywhere;
 }
 
 .confession-btn:hover {
@@ -1181,6 +1278,10 @@ body::before {
     color: var(--color-paper);
     border-color: var(--color-gold);
     box-shadow: inset 0 0 15px rgba(0,0,0,0.6), 0 0 8px rgba(166, 36, 36, 0.5);
+}
+
+.confession-btn.confessed .confession-effect {
+    color: rgba(245, 242, 235, 0.84);
 }
 
 .confession-btn .confession-mark {
@@ -1378,7 +1479,7 @@ body::before {
         border-radius: 0;
         box-shadow: none;
         min-height: 100vh;
-        padding: 1.5rem 1rem;
+        padding: 1rem 1rem 1.2rem;
     }
     
     .mystic-title {
@@ -1386,16 +1487,39 @@ body::before {
     }
     
     .reveal-card-viewport {
-        height: 330px;
+        height: clamp(245px, 39vh, 300px);
+        margin-bottom: 0.65rem;
     }
     
     .tarot-card-3d {
-        width: 220px;
-        height: 320px;
+        width: min(206px, 68vw);
+        height: min(302px, 47vh);
     }
     
     .card-illustration-container {
-        height: 130px;
+        height: clamp(96px, 17vh, 124px);
+    }
+
+    .statement-text {
+        font-size: 0.9rem;
+        line-height: 1.18;
+    }
+
+    .confession-title {
+        font-size: 1.05rem;
+    }
+
+    .confession-grid {
+        gap: 0.55rem;
+    }
+
+    .confession-btn {
+        min-height: 88px;
+        padding: 0.52rem;
+    }
+
+    .confession-effect {
+        font-size: 0.62rem;
     }
 
     .ritual-status-bar {
@@ -1442,7 +1566,8 @@ dialog#grimoire-dialog {
     padding: 1.5rem;
     max-width: 440px;
     width: 90%;
-    margin: auto;
+    max-height: 88vh;
+    margin: 0;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(217, 180, 97, 0.2);
     filter: url(#woodcut-roughness);
     outline: none;
@@ -1450,6 +1575,12 @@ dialog#grimoire-dialog {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+dialog#custom-card-dialog .dialog-inner,
+dialog#grimoire-dialog .dialog-inner {
+    max-height: calc(88vh - 3rem);
+    overflow-y: auto;
 }
 
 dialog#custom-card-dialog[open],
@@ -1470,6 +1601,43 @@ dialog#grimoire-dialog .section-title {
     border-bottom: 2px solid var(--color-gold-dark);
     margin-bottom: 1.2rem;
     text-align: center;
+}
+
+.manual-card {
+    margin: 0 0 1rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(140, 106, 35, 0.48);
+    border-radius: 8px;
+    background:
+        linear-gradient(180deg, rgba(217, 180, 97, 0.16), rgba(255, 255, 255, 0.18)),
+        rgba(255, 255, 255, 0.22);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+    text-align: left;
+}
+
+.manual-card h4 {
+    margin: 0.35rem 0 0.28rem;
+    color: var(--color-crimson);
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.manual-card h4:first-child {
+    margin-top: 0;
+}
+
+.manual-card ul {
+    margin: 0;
+    padding-left: 1.05rem;
+}
+
+.manual-card li {
+    margin: 0.18rem 0;
+    color: var(--color-ink);
+    font-size: 0.92rem;
+    line-height: 1.2;
 }
 
 .input-group-vertical {
@@ -2042,7 +2210,7 @@ body.theme-cosmic .score-item.arch-gato-preto {
 
 /* Grimoire List & Items */
 .grimoire-list {
-    max-height: 280px;
+    max-height: 220px;
     overflow-y: auto;
     margin: 0.5rem 0;
     padding-right: 0.5rem;

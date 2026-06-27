@@ -16,9 +16,9 @@
     <div class="mystic-bg-overlay"></div>
     <div class="theme-control-wrapper">
         <select id="theme-selector" class="theme-select" aria-label="Seletor de Tema" title="Alternar tema místico">
-            <option value="gold">✨ Místico & Ouro</option>
-            <option value="classic">📜 Xilogravura Clássica</option>
-            <option value="cosmic">🌌 Sáfico Cósmico</option>
+            <option value="gold">Místico & Ouro</option>
+            <option value="classic">Xilogravura Clássica</option>
+            <option value="cosmic">Sáfico Cósmico</option>
         </select>
     </div>
     <canvas id="mystic-particles"></canvas>
@@ -55,7 +55,7 @@
 
         <!-- Active Rules & Special Roles Panel (visible during gameplay) -->
         <div id="active-rules-panel" class="active-rules-container hidden">
-            <div class="rules-header">📜 Influências Místicas</div>
+            <div class="rules-header">Influências Místicas</div>
             <div id="rules-list" class="rules-body">
                 <!-- Dynamic rules will go here -->
             </div>
@@ -78,19 +78,6 @@
                         <button type="submit" id="btn-add-player" class="btn-mystic btn-add-player" aria-label="Invocar no círculo">+</button>
                     </div>
 
-                    <div class="archetype-selector">
-                        <span class="selector-label">Temperamento</span>
-                        <div class="archetype-options">
-                            <label class="radio-label">
-                                <input type="radio" name="archetype" value="labrador" checked>
-                                <span class="custom-radio">Labrador</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="archetype" value="gato-preto">
-                                <span class="custom-radio">Gato Preto</span>
-                            </label>
-                        </div>
-                    </div>
                 </form>
 
                 <!-- Players Circle -->
@@ -100,6 +87,27 @@
                         <!-- Javascript will populate players here -->
                         <li class="empty-list-msg">Nenhuma alma invocada ainda...</li>
                     </ul>
+                    <button type="button" id="btn-add-guest-player" class="btn-add-guest-player">Outra pessoa no rolê</button>
+                </div>
+
+                <div class="archetype-selector lobby-temperament-panel">
+                    <span class="selector-label">Temperamento da próxima jogadora</span>
+                    <div class="archetype-options">
+                        <label class="radio-label">
+                            <input type="radio" name="archetype" value="labrador" checked>
+                            <span class="custom-radio">
+                                <strong>Labrador</strong>
+                                <small>Protege: -1 gole quando beber.</small>
+                            </span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="archetype" value="gato-preto">
+                            <span class="custom-radio">
+                                <strong>Gato Preto</strong>
+                                <small>Caos: +1 ponto quando beber por carta.</small>
+                            </span>
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Table Mode -->
@@ -143,7 +151,7 @@
 
                 <!-- Cálice Sagrado display (visible in Sueca mode) -->
                 <div id="calice-sagrado-container" class="calice-sagrado-box hidden">
-                    <span class="calice-label">🍷 Cálice Sagrado:</span>
+                    <span class="calice-label">Cálice Sagrado:</span>
                     <span id="calice-sagrado-count" class="calice-value">0 Goles</span>
                     <div class="calice-liquid-bar-wrapper">
                         <div id="calice-liquid-fill" class="calice-liquid-fill" style="width: 0%;"></div>
@@ -300,28 +308,28 @@
                     <span class="selector-label">Símbolo do Arcano:</span>
                     <div class="symbol-options">
                         <label class="radio-label">
-                            <input type="radio" name="custom-symbol" value="🍷" checked>
-                            <span class="custom-radio">🍷 Cálice</span>
+                            <input type="radio" name="custom-symbol" value="☾" checked>
+                            <span class="custom-radio">☾ Cálice</span>
                         </label>
                         <label class="radio-label">
-                            <input type="radio" name="custom-symbol" value="🌙">
-                            <span class="custom-radio">🌙 Lua</span>
+                            <input type="radio" name="custom-symbol" value="☽">
+                            <span class="custom-radio">☽ Lua</span>
                         </label>
                         <label class="radio-label">
-                            <input type="radio" name="custom-symbol" value="🐈">
-                            <span class="custom-radio">🐈 Gato</span>
+                            <input type="radio" name="custom-symbol" value="✺">
+                            <span class="custom-radio">✺ Gato</span>
                         </label>
                         <label class="radio-label">
-                            <input type="radio" name="custom-symbol" value="🐕">
-                            <span class="custom-radio">🐕 Labrador</span>
+                            <input type="radio" name="custom-symbol" value="◇">
+                            <span class="custom-radio">◇ Labrador</span>
                         </label>
                         <label class="radio-label">
-                            <input type="radio" name="custom-symbol" value="🗝️">
-                            <span class="custom-radio">🗝️ Chave</span>
+                            <input type="radio" name="custom-symbol" value="✦">
+                            <span class="custom-radio">✦ Chave</span>
                         </label>
                         <label class="radio-label">
-                            <input type="radio" name="custom-symbol" value="💀">
-                            <span class="custom-radio">💀 Caveira</span>
+                            <input type="radio" name="custom-symbol" value="†">
+                            <span class="custom-radio">† Caveira</span>
                         </label>
                     </div>
                 </div>
@@ -337,6 +345,20 @@
     <dialog id="grimoire-dialog" closedby="any" aria-labelledby="grimoire-heading">
         <div class="dialog-inner">
             <h3 id="grimoire-heading" class="section-title">O Grimório dos Pecados</h3>
+            <div class="manual-card" aria-label="Manual rápido da Sueca de Maluca">
+                <h4>Manual rápido</h4>
+                <ul>
+                    <li>Tire uma carta na sua vez e resolva a ordem da mesa.</li>
+                    <li>Quem confessa, perde votação ou recusa prenda soma goles.</li>
+                    <li>Pontos vêm de coragem, alvo escolhido e caos bem administrado.</li>
+                    <li>Vence quem termina com mais pontos; empate favorece quem bebeu menos.</li>
+                </ul>
+                <h4>Temperamentos</h4>
+                <ul>
+                    <li><strong>Labrador:</strong> reduz em 1 gole toda vez que beber.</li>
+                    <li><strong>Gato Preto:</strong> ganha +1 ponto extra quando bebe por carta.</li>
+                </ul>
+            </div>
             <div id="grimoire-history-content" class="grimoire-list">
                 <p class="empty-list-msg">Nenhum arcano foi revelado nesta sessão ainda...</p>
             </div>

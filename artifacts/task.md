@@ -1,11 +1,23 @@
-# Checklist de Tarefas: O Tarô de Maluca — Edição Eu Nunca & Sueca
+# Checklist de Tarefas: O Taro de Maluca — Sueca de Maluca
 
-- [x] Adicionar controles de modo de jogo (Sobrevivência vs Roda de Bar) no Lobby
-- [x] Adaptar a UI do Scoreboard para alternar entre Vidas (Cálices) e Goles (Sip Tracker)
-- [x] Adicionar displays na UI para Regras Ativas, Mestre da Pergunta e Chave do Banheiro
-- [x] Implementar a mecânica visual e de estado do Cálice Sagrado (Copo do Rei)
-- [x] Criar o modal/botão interativo do Desafio do Dedo (A Força)
-- [x] Mapear as ações de Sueca a todos os Arcanos em `app.js`
-- [x] Atualizar a lógica de transição de turnos e fim de jogo no modo Roda de Bar
-- [x] Testar e validar a Edição Sueca/Eu Nunca no navegador
-- [x] Atualizar o `walkthrough.md` com a nova entrega e fotos/gravações
+- [x] Definir `Sueca de Maluca` como fluxo principal, sem modo sobrevivencia.
+- [x] Iniciar placar em `0 goles` e `0 pts`.
+- [x] Misturar cartas de confissao, prenda, alvo, grupo, regra e votacao.
+- [x] Usar retratos `classic` para jogadoras no lobby e superficies principais.
+- [x] Usar retratos `cosmic` para jogadora ativa/selecionada.
+- [x] Remover emoji estrutural da identidade das jogadoras e controles principais.
+- [x] Adicionar fallback de inicial para convidadas.
+- [x] Adicionar `Outra pessoa no role`.
+- [x] Mover temperamento para baixo do circulo de jogadoras.
+- [x] Implementar efeitos reais de temperamento:
+  - [x] `Labrador`: -1 gole quando bebe por carta.
+  - [x] `Gato Preto`: +1 ponto quando bebe por carta.
+- [x] Mostrar efeitos de temperamento no lobby e nos botoes de resolucao.
+- [x] Adicionar manual rapido no Grimorio.
+- [x] Corrigir historico do Grimorio para o novo formato `summary`.
+- [x] Corrigir altura/posicionamento mobile da tela de reveal.
+- [x] Atualizar `PLAN.md`, `artifacts/implementation_plan.md` e `artifacts/walkthrough.md`.
+- [x] Registrar trabalho em `.logs/work-2026-06-27.md`.
+- [x] Rodar `npm run build`.
+- [x] Validar fluxo mobile com Playwright.
+- [x] Salvar screenshot de evidencia em `artifacts/`.

@@ -4,3 +4,4 @@ open-party-lab-reference/
 sloshed-reference/
 .DS_Store
 .agents/
+.playwright-mcp/
