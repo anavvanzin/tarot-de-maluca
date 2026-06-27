@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Tarô de Maluca — Design System Gallery</title>
+<link rel="stylesheet" href="./styles.css">
+<style>
+  body{background:var(--color-velvet);color:var(--color-paper);padding:2.5rem 1.5rem}
+  .gallery{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:2.5rem}
+  .lead{text-align:center}
+  .group h2{font-family:var(--font-heading);text-transform:uppercase;letter-spacing:3px;color:var(--color-gold);font-size:1rem;border-bottom:1px solid var(--color-gold-dark);padding-bottom:.5rem;margin-bottom:1.4rem}
+  .specimens{display:flex;flex-wrap:wrap;gap:1.5rem;align-items:flex-start;justify-content:center}
+  .swatch{border:1px solid var(--color-gold-dark);border-radius:6px;overflow:hidden;width:130px}
+  .swatch .chip{height:60px}
+  .swatch .meta{padding:.4rem .5rem;background:rgba(0,0,0,.35);font-family:var(--font-heading);font-size:.68rem}
+  .swatch .meta b{display:block;color:var(--color-gold)}
+</style>
+</head>
+<body>
+<svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs>
+  <filter id="woodcut-roughness" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs></svg>
+
+<div class="gallery">
+  <header class="app-header lead">
+    <h1 class="mystic-title">O Tarô de Maluca</h1>
+    <p class="mystic-subtitle">Design System · Gallery</p>
+  </header>
+
+  <section class="group">
+    <h2>Foundations · Colors</h2>
+    <div class="specimens">
+      <div class="swatch"><div class="chip" style="background:var(--color-velvet)"></div><div class="meta"><b>velvet</b>#08060c</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-obsidian)"></div><div class="meta"><b>obsidian</b>#121017</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-gold)"></div><div class="meta"><b>gold</b>#d9b461</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-gold-dark)"></div><div class="meta"><b>gold-dark</b>#8c6a23</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-crimson)"></div><div class="meta"><b>crimson</b>#a62424</div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-paper)"></div><div class="meta"><b>paper</b>#f5f2eb</div></div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Actions</h2>
+    <div class="specimens">
+      <button class="btn-mystic">Invocar</button>
+      <button class="btn-mystic" disabled>Bloqueado</button>
+      <button class="btn-icon" aria-label="Som"><span>🔔</span></button>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Forms</h2>
+    <div class="specimens">
+      <form class="lobby-form" style="width:280px"><div class="input-group"><input type="text" placeholder="Nome da jogadora..." value="Andressa"></div></form>
+      <div class="archetype-selector" style="width:280px">
+        <span class="selector-label">Temperamento</span>
+        <div class="archetype-options">
+          <label class="radio-label"><input type="radio" name="a" value="l" checked><span class="custom-radio">🐕 Labrador</span></label>
+          <label class="radio-label"><input type="radio" name="a" value="g"><span class="custom-radio">🐈 Gato Preto</span></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Cards</h2>
+    <div class="specimens">
+      <div class="deck-container">
+        <div class="card-deck-visual" role="button" tabindex="0" aria-label="Tirar uma carta">
+          <div class="deck-card-layer layer-1"></div><div class="deck-card-layer layer-2"></div><div class="deck-card-layer layer-3"></div>
+          <div class="deck-card-layer top-card"><div class="deck-back-art"></div><div class="deck-prompt-text">Toque para Tirar</div></div>
+        </div>
+      </div>
+      <div class="tarot-card-3d flipped" style="width:230px;height:340px">
+        <div class="card-side back"><div class="card-inner-border"><div class="card-art-back"></div></div></div>
+        <div class="card-side front"><div class="card-inner-border">
+          <div class="card-header-info"><span class="arcana-num">XVI</span><h3 class="arcana-name">O DIABO</h3></div>
+          <div class="card-illustration-container"><div class="card-illustration" style="background-image:url('./assets/arcana-devil.png')"></div></div>
+          <div class="card-statement-container"><p class="statement-prefix">Eu nunca...</p><blockquote class="statement-text">"Stalkeei as redes de alguém até cinco anos atrás."</blockquote></div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Game</h2>
+    <div class="specimens">
+      <ul class="players-list-badge" style="margin:0">
+        <li class="player-badge"><span class="player-icon">🐕</span> Andressa <button type="button" class="remove-player-btn" aria-label="Remover Andressa">×</button></li>
+        <li class="player-badge"><span class="player-icon">🐈</span> Sabrina <button type="button" class="remove-player-btn" aria-label="Remover Sabrina">×</button></li>
+      </ul>
+      <div class="game-scoreboard" style="width:300px;border-top:none;padding-top:0">
+        <div class="scoreboard-grid">
+          <div class="score-item active-turn"><span class="score-name">🐕 Andressa</span><span class="score-lives"><span class="chalice-icon">🍷</span><span class="chalice-icon">🍷</span><span class="chalice-icon">🍷</span></span></div>
+          <div class="score-item"><span class="score-name">🐈 Sabrina</span><span class="score-lives"><span class="chalice-icon">🍷</span><span class="chalice-icon lost">🍷</span><span class="chalice-icon lost">🍷</span></span></div>
+        </div>
+      </div>
+      <div class="confession-grid" style="width:300px">
+        <button class="confession-btn"><span class="confession-mark">🔥</span> Shai</button>
+        <button class="confession-btn confessed"><span class="confession-mark">🔥</span> Patrícia</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Surfaces</h2>
+    <div class="specimens">
+      <div class="standings-box" style="width:340px">
+        <h3 class="section-title">Julgamento Final</h3>
+        <div class="rankings-list">
+          <div class="ranking-item"><span class="ranking-player-name">Andressa <span class="ranking-title-badge pure">A Alma Mais Pura</span></span><span class="ranking-lives-info">3 🍷</span></div>
+          <div class="ranking-item"><span class="ranking-player-name">Patrícia <span class="ranking-title-badge doomed">A Condenada</span></span><span class="ranking-lives-info">0 🍷</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

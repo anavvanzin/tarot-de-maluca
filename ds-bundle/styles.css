@@ -1,0 +1,12 @@
+/* ==========================================================================
+   O TARÔ DE MALUCA — Design System entry stylesheet
+   --------------------------------------------------------------------------
+   Rendered designs receive only this file's transitive @import closure, so
+   every token, font and component style is reachable from here.
+   ========================================================================== */
+
+/* Fonts — Mystical woodcut / gold-foil serif family (publicly hosted) */
+@import url('https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700;900&display=swap');
+
+/* Tokens + all component styles (the customer's real compiled CSS) */
+@import url('./_ds_bundle.css');

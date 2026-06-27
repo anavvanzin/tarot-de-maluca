@@ -1,0 +1,8 @@
+{
+  "shape": "package",
+  "offScript": true,
+  "bundleDir": "ds-bundle",
+  "readmeHeader": ".design-sync/conventions.md",
+  "stylesEntry": "styles.css",
+  "notes": "CSS-only design system extracted by hand from a static site (index.html + style.css). No package.json / build / Storybook, so the standard converter does not apply; components are HTML+CSS classes, not compiled React. projectId is left unset because DesignSync could not authenticate in this headless web environment — set it on the first successful upload."
+}
