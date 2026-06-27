@@ -20,15 +20,15 @@ const ALL_CARDS = [
     { id: 6, title: "OS ENAMORADOS", num: "VI", image: null, text: "comprei um presente super elaborado ou fiz uma playlist gigante com significados ocultos para alguém com quem só saí duas vezes.", special: "Pacto de Enamorados: Se exatamente duas jogadoras confessarem, elas não perdem essência. Caso contrário, perdem 1 cálice." },
     { id: 7, title: "O CARRO", num: "VII", image: null, text: "errei a entrada da rua ou passei do ponto fofocando tanto com as amigas que esqueci para onde estava dirigindo." },
     { id: 8, title: "A JUSTIÇA", num: "VIII", image: null, text: "peguei um ranço eterno e inabalável da ex de uma amiga próxima por pura solidariedade feminina." },
-    { id: 9, title: "O EREMITA", num: "IX", image: null, text: "sumi do rolê ou cancelei de última hora para ficar isolada em casa com meus bichinhos assistindo série sáfica." },
+    { id: 9, title: "O EREMITA", num: "IX", image: null, text: "sumi do rolê ou cancelei de última hora para ficar isolada em casa com meus bichinhos assistindo série sáfica.", special: "Isolamento do Eremita: Se você for a única a NÃO confessar, você recupera 1 cálice. Se confessar, perde 2 cálices." },
     { id: 10, title: "A RODA DA FORTUNA", num: "X", image: null, text: "participei de um grupo de amigas onde quase todo mundo já tinha ficado com todo mundo em algum momento do passado.", special: "Roda da Fortuna: O destino gira! Quem confessar desta vez recupera 1 cálice de essência; quem não confessar perde 1 cálice." },
     { id: 11, title: "A FORÇA", num: "XI", image: null, text: "tentei carregar algo super pesado ou fazer trabalho manual complexo sozinha só para provar a mim mesma que mulheres conseguem tudo.", special: "Força Singular: Se apenas uma jogadora confessar, ela não perde essência. Se duas ou mais confessarem, todas perdem 1 cálice." },
-    { id: 12, title: "O ENFORCADO", num: "XII", image: null, text: "fiquei presa em um chove-não-molha sáfico por meses sabendo lá no fundo que não daria em nada." },
-    { id: 13, title: "A MORTE", num: "XIII", image: "assets/arcana-death.png", text: "dei um 'mute' ou deixei de seguir mais de 10 conhecidas do círculo sáfico local de uma vez só para preservar minha paz de espírito." },
+    { id: 12, title: "O ENFORCADO", num: "XII", image: null, text: "fiquei presa em um chove-não-molha sáfico por meses sabendo lá no fundo que não daria em nada.", special: "Sacrifício do Enforcado: Se exatamente uma jogadora confessar, ela perde 2 cálices, mas todas as outras recuperam 1 cálice." },
+    { id: 13, title: "A MORTE", num: "XIII", image: "assets/arcana-death.png", text: "dei um 'mute' ou deixei de seguir mais de 10 conhecidas do círculo sáfico local de uma vez só para preservar minha paz de espírito.", special: "Renascimento da Morte: As jogadoras com menos vidas no círculo recebem imunidade nesta rodada, mesmo se confessarem." },
     { id: 14, title: "A TEMPERANÇA", num: "XIV", image: null, text: "tentei acalmar uma fofoca na roda contando um segredo mas finalizando com a frase clássica: 'mas não espalha, hein'." },
     { id: 15, title: "O DIABO", num: "XV", image: "assets/arcana-devil.png", text: "mandei mensagem de 'oi sumida' nas redes sociais nas primeiras horas da madrugada para aquela garota que tinha me deixado no vácuo." },
     { id: 16, title: "A TORRE", num: "XVI", image: "assets/arcana-tower.png", text: "causei ou alimentei um drama gigante em um grupo de WhatsApp ou no meio do rolê por conta de um mal-entendido bobo." },
-    { id: 17, title: "A ESTRELA", num: "XVII", image: null, text: "treinei uma DR (discussão de relação) inteira na minha mente ou no espelho do banheiro fingindo estar conversando com a pessoa." },
+    { id: 17, title: "A ESTRELA", num: "XVII", image: null, text: "treinei uma DR (discussão de relação) inteira na minha mente ou no espelho do banheiro fingindo estar conversando com a pessoa.", special: "Esperança da Estrela: Se absolutamente ninguém confessar, todas recuperam 1 cálice. Caso contrário, as confessadas perdem 1 cálice." },
     { id: 18, title: "A LUA", num: "XVIII", image: "assets/arcana-moon.png", text: "passei mais de duas horas stalkeando o perfil de um crush até descobrir qual era o signo solar, lunar e ascendente dela." },
     { id: 19, title: "O SOL", num: "XIX", image: null, text: "tentei paquerar alguém de forma direta e a pessoa achou que eu estava apenas sendo 'uma amiga extremamente simpática e fofa'." },
     { id: 20, title: "O JULGAMENTO", num: "XX", image: null, text: "mandei mensagem ou print reclamando das atitudes de um crush ou amiga para a própria pessoa por puro engano.", special: "Julgamento Coletivo: Se a maioria das jogadoras confessar, ninguém perde essência. Se for metade ou menos, as confessadas perdem 2 cálices." },
@@ -541,6 +541,7 @@ function submitConfession() {
     // Apply lives deduction or specials
     const totalConfessed = confessedPlayers.size;
     const majorityThreshold = players.length / 2;
+    const minLives = Math.min(...players.map(p => p.lives));
 
     players.forEach((player, idx) => {
         if (currentCard.id === 10) { // Roda da Fortuna special
@@ -573,6 +574,40 @@ function submitConfession() {
                     player.lives = Math.max(0, player.lives - 2);
                 }
             }
+        } else if (currentCard.id === 9) { // O Eremita special
+            if (totalConfessed === players.length - 1 && !confessedPlayers.has(idx)) {
+                player.lives = Math.min(MAX_LIVES, player.lives + 1);
+            } else if (confessedPlayers.has(idx)) {
+                player.lives = Math.max(0, player.lives - 2);
+            }
+        } else if (currentCard.id === 12) { // O Enforcado special
+            if (totalConfessed === 1) {
+                if (confessedPlayers.has(idx)) {
+                    player.lives = Math.max(0, player.lives - 2);
+                } else {
+                    player.lives = Math.min(MAX_LIVES, player.lives + 1);
+                }
+            } else {
+                if (confessedPlayers.has(idx)) {
+                    player.lives = Math.max(0, player.lives - 1);
+                }
+            }
+        } else if (currentCard.id === 13) { // A Morte special
+            if (player.lives === minLives) {
+                // Protected!
+            } else {
+                if (confessedPlayers.has(idx)) {
+                    player.lives = Math.max(0, player.lives - 1);
+                }
+            }
+        } else if (currentCard.id === 17) { // A Estrela special
+            if (totalConfessed === 0) {
+                player.lives = Math.min(MAX_LIVES, player.lives + 1);
+            } else {
+                if (confessedPlayers.has(idx)) {
+                    player.lives = Math.max(0, player.lives - 1);
+                }
+            }
         } else { // Standard card
             if (confessedPlayers.has(idx)) {
                 player.lives = Math.max(0, player.lives - 1);
@@ -583,8 +618,10 @@ function submitConfession() {
     // Animate lives lost on scoreboard
     updateScoreboard();
 
-    // Sound effect if someone confessed
-    if (confessedPlayers.size > 0) {
+    // Sound effect if someone confessed or recovered life
+    const recoveredLifeInStar = (currentCard.id === 17 && totalConfessed === 0);
+    const recoveredLifeInEnforcado = (currentCard.id === 12 && totalConfessed === 1);
+    if (confessedPlayers.size > 0 || recoveredLifeInStar || recoveredLifeInEnforcado) {
         setTimeout(() => playSound('confess'), 300);
     }
 
