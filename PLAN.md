@@ -11,6 +11,8 @@ Static Vite app with code-native UI and local browser state:
 - `app.js` owns game state, turn flow, card draw, confession handling, modal actions, and UI rendering.
 - `assets/` owns browser-loadable visual assets.
 - `artifacts/concept-gameplay-screen-2026-06-27.png` is a design reference generated with Image Gen, not a runtime UI screenshot.
+- `artifacts/concept-lobby-2026-06-27.png`, `artifacts/concept-reveal-2026-06-27.png`, and `artifacts/concept-gameover-2026-06-27.png` extend the UI reference set across the full game flow.
+- `artifacts/concept-arcana-*-2026-06-27.png` are generated personal arcana references based on the original reference-image gallery.
 - `.logs/work-2026-06-27.md` records execution decisions, commands, and evidence.
 
 ## Tech Stack
@@ -21,6 +23,7 @@ Vite 6, plain JavaScript modules, HTML dialog elements, CSS custom properties, C
 - Existing implementation plan: `artifacts/implementation_plan.md`.
 - Existing walkthrough: `artifacts/walkthrough.md`.
 - Image Gen concept: `artifacts/concept-gameplay-screen-2026-06-27.png`.
+- Additional Image Gen concepts: `artifacts/concept-lobby-2026-06-27.png`, `artifacts/concept-reveal-2026-06-27.png`, `artifacts/concept-gameover-2026-06-27.png`, and `artifacts/concept-arcana-*-2026-06-27.png`.
 - OpenAI docs check: official Image Generation guide confirms `gpt-image-2` does not currently support transparent backgrounds, so this pass avoids native-transparent generated assets.
 - Baseline command already run: `npm install`, then `npm run build`.
 

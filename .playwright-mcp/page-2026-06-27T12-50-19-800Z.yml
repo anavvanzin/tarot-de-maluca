@@ -1,0 +1,75 @@
+- generic [active] [ref=e1]:
+  - combobox "Seletor de Tema" [ref=e4] [cursor=pointer]:
+    - option "✨ Místico & Ouro" [selected]
+    - option "📜 Xilogravura Clássica"
+    - option "🌌 Sáfico Cósmico"
+  - generic [ref=e5]:
+    - button "Abrir grimório" [ref=e6] [cursor=pointer]:
+      - generic [ref=e7]: 📖
+    - button "Alternar som" [ref=e8] [cursor=pointer]:
+      - generic [ref=e9]: 🔔
+  - generic [ref=e10]:
+    - banner [ref=e11]:
+      - heading "O Tarô de Maluca" [level=1] [ref=e12]
+      - paragraph [ref=e13]: Revele seus pecados e sele seu destino
+      - text: 🔸 ❖ 🔸
+    - main [ref=e14]:
+      - region "Lobby de Configuração" [ref=e15]:
+        - heading "Lobby de Configuração" [level=2] [ref=e16]
+        - paragraph [ref=e18]: Bem-vindas à mesa do destino. Digitem seus nomes para sentarem-se em círculo. A cada rodada, uma carta será revelada. Aquelas que já cometeram o pecado perderão um cálice de sua essência vital.
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: Nome da Jogadora
+            - textbox "Nome da Jogadora" [ref=e22]:
+              - /placeholder: Nome da jogadora...
+          - generic [ref=e23]:
+            - generic [ref=e24]: "Temperamento:"
+            - generic [ref=e25]:
+              - generic [ref=e26] [cursor=pointer]:
+                - radio "🐕 Labrador" [checked]
+                - generic [ref=e27]: 🐕 Labrador
+              - generic [ref=e28] [cursor=pointer]:
+                - radio "🐈 Gato Preto"
+                - generic [ref=e29]: 🐈 Gato Preto
+          - button "Invocar no Círculo" [ref=e30] [cursor=pointer]
+        - generic [ref=e31]:
+          - heading "O Círculo Invocado" [level=3] [ref=e32]
+          - list [ref=e33]:
+            - listitem [ref=e34]:
+              - generic [ref=e35]: 🦉
+              - generic [ref=e36]: Sabrina (🐕)
+              - button "Remover Sabrina" [ref=e37] [cursor=pointer]: ×
+            - listitem [ref=e38]:
+              - generic [ref=e39]: 🐍
+              - generic [ref=e40]: Shai (🐈)
+              - button "Remover Shai" [ref=e41] [cursor=pointer]: ×
+            - listitem [ref=e42]:
+              - generic [ref=e43]: 💀
+              - generic [ref=e44]: Andressa (🐕)
+              - button "Remover Andressa" [ref=e45] [cursor=pointer]: ×
+            - listitem [ref=e46]:
+              - generic [ref=e47]: 🍷
+              - generic [ref=e48]: Patrícia (🐈)
+              - button "Remover Patrícia" [ref=e49] [cursor=pointer]: ×
+            - listitem [ref=e50]:
+              - generic [ref=e51]: ☀️
+              - generic [ref=e52]: Ana (🐈)
+              - button "Remover Ana" [ref=e53] [cursor=pointer]: ×
+        - generic [ref=e54]:
+          - generic [ref=e55]: "Modo de Jogo:"
+          - generic [ref=e56]:
+            - generic [ref=e57] [cursor=pointer]:
+              - radio "🍷 Sobrevivência (Vidas) 5 vidas por jogadora. Quem confessar perde 1 cálice. O último a sobreviver vence." [checked]
+              - generic [ref=e58]:
+                - generic [ref=e59]: 🍷 Sobrevivência (Vidas)
+                - generic [ref=e60]: 5 vidas por jogadora. Quem confessar perde 1 cálice. O último a sobreviver vence.
+            - generic [ref=e61] [cursor=pointer]:
+              - radio "🍻 Roda de Bar (Goles) Sem eliminação. Conta o número de goles. Cartas ativam minijogos de bebida (Sueca)."
+              - generic [ref=e62]:
+                - generic [ref=e63]: 🍻 Roda de Bar (Goles)
+                - generic [ref=e64]: Sem eliminação. Conta o número de goles. Cartas ativam minijogos de bebida (Sueca).
+        - generic [ref=e65]:
+          - button "Forjar Arcano" [ref=e66] [cursor=pointer]
+          - button "Iniciar a Leitura" [ref=e67] [cursor=pointer]
+    - contentinfo [ref=e68]:
+      - paragraph [ref=e69]: Criado para rodas de fofocas e revelações místicas.
