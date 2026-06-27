@@ -1230,7 +1230,7 @@ function updateScoreboard() {
             scoreHtml = `<div class="score-lives">${chalicesHtml}</div>`;
         }
 
-        const archIcon = player.archetype === 'labrador' ? '🐕' : '🐈';
+        const archIcon = player.archetype === 'labrador' ? '🐶' : '🐱';
         item.innerHTML = `
             <span class="score-name">${player.icon} ${player.name} <span class="archetype-icon" title="${player.archetype}">${archIcon}</span></span>
             ${scoreHtml}
@@ -1263,7 +1263,7 @@ function endGame() {
         // Assign mystical titles based on score and temperament
         let titleBadge = '';
         const archLabel = player.archetype === 'labrador' ? 'Labrador' : 'Gato Preto';
-        const archIcon = player.archetype === 'labrador' ? '🐕' : '🐈';
+        const archIcon = player.archetype === 'labrador' ? '🐶' : '🐱';
         
         if (gameMode === 'sueca') {
             if (player.lives === minRemainingLives) {
@@ -1366,7 +1366,7 @@ function renderLobbyPlayers() {
     players.forEach((player, idx) => {
         const li = document.createElement("li");
         li.className = "player-badge";
-        const archIcon = player.archetype === 'labrador' ? '🐕' : '🐈';
+        const archIcon = player.archetype === 'labrador' ? '🐶' : '🐱';
         li.innerHTML = `
             <span class="player-icon">${player.icon}</span>
             <span>${player.name} <small style="font-size:0.75rem; opacity:0.8;">(${archIcon})</small></span>
