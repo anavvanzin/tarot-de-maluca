@@ -255,20 +255,24 @@ body::before {
 .lobby-form .input-group {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 1.6rem;
+    margin-bottom: 0;
+    min-width: 0;
 }
 
 .lobby-form input[type="text"] {
     flex-grow: 1;
     font-family: var(--font-body);
-    font-size: 1.2rem;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 2px solid var(--color-gold-dark);
+    font-size: 1.14rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(8, 6, 12, 0.18)),
+        rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(217, 180, 97, 0.48);
+    border-radius: 8px;
     color: var(--color-paper);
-    padding: 0.7rem 1.2rem;
-    filter: url(#woodcut-roughness);
+    padding: 0.84rem 1rem;
     outline: none;
     transition: all var(--transition-fast);
+    width: 100%;
 }
 
 .lobby-form input[type="text"]::placeholder {
@@ -279,6 +283,42 @@ body::before {
     background-color: rgba(255, 255, 255, 0.09);
     border-color: var(--color-gold);
     box-shadow: 0 0 10px rgba(219, 180, 97, 0.25);
+}
+
+.lobby-screen .btn-mystic {
+    filter: none;
+    border-radius: 8px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(245, 242, 235, 0.12);
+}
+
+.btn-add-player {
+    width: 54px;
+    min-width: 54px;
+    padding: 0;
+    font-size: 1.85rem;
+    line-height: 1;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+}
+
+.lobby-actions {
+    display: grid;
+    grid-template-columns: 0.82fr 1.18fr;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.lobby-actions .btn-large,
+.lobby-actions .btn-secondary {
+    margin-top: 0;
+    min-height: 56px;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--color-gold);
+    border-color: rgba(217, 180, 97, 0.55);
 }
 
 /* Sound control Button */
@@ -315,36 +355,34 @@ body::before {
    SCREEN 1: LOBBY STYLES
    ========================================================================== */
 
-.intro-box {
-    border: 1px dashed var(--color-gold-dark);
-    padding: 1.3rem;
-    margin-bottom: 1.5rem;
-    background-color: rgba(255, 255, 255, 0.03);
-    position: relative;
+.lobby-screen {
+    gap: 1.35rem;
 }
 
-.intro-text {
-    font-size: 1.05rem;
-    text-align: justify;
-    font-style: italic;
-    color: #c7c3bd;
-    line-height: 1.4;
+.lobby-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.lobby-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 54px;
+    gap: 0.7rem;
+    align-items: stretch;
 }
 
 /* Player Badge list */
 .players-lobby-section {
-    margin-top: 2.2rem;
-    margin-bottom: 2rem;
-    flex-grow: 1;
+    margin: 0.1rem 0 0.35rem;
 }
 
 .players-list-badge {
     list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: 0.7rem;
     justify-content: center;
-    padding: 0.8rem 0;
+    padding: 0.15rem 0 0;
 }
 
 .empty-list-msg {
@@ -354,31 +392,46 @@ body::before {
 }
 
 .player-badge {
-    background-color: rgba(255, 255, 255, 0.04);
+    min-height: 108px;
+    background:
+        radial-gradient(circle at 50% 22%, rgba(217, 180, 97, 0.12), transparent 36%),
+        rgba(255, 255, 255, 0.035);
     color: var(--color-paper);
-    padding: 0.5rem 0.9rem;
+    padding: 0.65rem 0.45rem 0.5rem;
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.6rem;
+    justify-content: center;
+    gap: 0.25rem;
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 0.9rem;
-    filter: url(#woodcut-roughness);
-    border: 1px solid var(--color-gold-dark);
-    box-shadow: 2px 2px 0px var(--color-ink);
+    font-size: 0.82rem;
+    border: 1px solid rgba(217, 180, 97, 0.46);
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(8, 6, 12, 0.76), 0 10px 24px rgba(0, 0, 0, 0.22);
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    position: relative;
+    text-align: center;
 }
 
 .player-badge .remove-player-btn {
-    background: transparent;
-    border: none;
+    position: absolute;
+    top: 0.28rem;
+    right: 0.32rem;
+    width: 22px;
+    height: 22px;
+    background: rgba(166, 36, 36, 0.14);
+    border: 1px solid rgba(166, 36, 36, 0.45);
+    border-radius: 50%;
     color: var(--color-crimson);
     font-weight: 900;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 0.95rem;
     display: inline-flex;
     align-items: center;
-    padding: 0 2px;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
 }
 
 .player-badge .remove-player-btn:hover {
@@ -386,73 +439,161 @@ body::before {
     transform: scale(1.1);
 }
 
-.player-badge .player-icon {
+.player-avatar,
+.active-player-avatar,
+.score-avatar,
+.confession-avatar,
+.mini-player-avatar,
+.ranking-avatar {
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(217, 180, 97, 0.56);
+    border-radius: 50%;
+    background: rgba(8, 6, 12, 0.68);
     color: var(--color-gold);
+    font-family: var(--font-heading);
+    font-weight: 900;
+    box-shadow: inset 0 0 16px rgba(217, 180, 97, 0.08);
+    overflow: hidden;
+    flex: 0 0 auto;
+}
+
+.player-avatar {
+    width: 46px;
+    height: 46px;
+    font-size: 1rem;
+}
+
+.active-player-avatar {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+}
+
+.score-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+}
+
+.confession-avatar,
+.mini-player-avatar,
+.ranking-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.78rem;
+}
+
+.player-avatar-img,
+.active-player-avatar-img,
+.score-avatar-img,
+.confession-avatar-img,
+.mini-player-avatar-img,
+.ranking-avatar-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+    border-radius: inherit;
+    filter: sepia(0.08) saturate(1.04) contrast(1.04);
+}
+
+.player-badge-name {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.4px;
+    line-height: 1.08;
+}
+
+.player-archetype {
+    color: rgba(217, 180, 97, 0.86);
+    font-family: var(--font-heading);
+    font-size: 0.52rem;
+    line-height: 1.1;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: 1px solid rgba(217, 180, 97, 0.24);
+    border-radius: 999px;
+    padding: 0.12rem 0.34rem;
+    background: rgba(217, 180, 97, 0.06);
 }
 
 /* Archetype Labrador/Cat Selector styling */
 .archetype-selector {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    margin-bottom: 1.6rem;
-    padding: 1rem 1.2rem;
-    border: 2px solid rgba(219, 180, 97, 0.25);
-    background-color: rgba(20, 15, 10, 0.45);
-    filter: url(#woodcut-roughness);
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid rgba(219, 180, 97, 0.24);
+    border-radius: 8px;
+    background: rgba(20, 15, 10, 0.26);
 }
 
 .game-mode-selector-section {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    margin-top: 2.2rem;
-    margin-bottom: 2.2rem;
-    padding: 1rem 1.2rem;
-    border: 2px solid rgba(219, 180, 97, 0.25);
-    background-color: rgba(20, 15, 10, 0.45);
-    filter: url(#woodcut-roughness);
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0.85rem;
+    border: 1px solid rgba(219, 180, 97, 0.24);
+    border-radius: 8px;
+    background:
+        linear-gradient(180deg, rgba(217, 180, 97, 0.08), rgba(8, 6, 12, 0.25)),
+        rgba(20, 15, 10, 0.34);
+}
+
+.sueca-mode-card {
+    text-align: center;
 }
 
 .game-mode-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
 }
 
 .game-mode-card .custom-radio {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 0.8rem 1rem;
-    gap: 0.3rem;
+    align-items: center;
+    justify-content: center;
+    min-height: 104px;
+    padding: 0.85rem 0.72rem;
+    gap: 0.48rem;
+    text-align: center;
 }
 
 .mode-title {
-    font-size: 1.05rem;
+    font-size: 0.96rem;
     font-family: var(--font-heading);
     font-weight: 700;
+    line-height: 1.05;
 }
 
 .mode-description {
     font-family: var(--font-body);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(245, 242, 235, 0.7);
     text-transform: none;
     letter-spacing: normal;
-    text-align: left;
-    line-height: 1.35;
+    text-align: center;
+    line-height: 1.22;
 }
 
 .selector-label {
     font-family: var(--font-heading);
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    color: var(--color-gold);
+    color: rgba(217, 180, 97, 0.86);
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.8px;
     text-align: center;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0;
 }
 
 .archetype-options {
@@ -479,21 +620,23 @@ body::before {
     gap: 0.5rem;
     width: 100%;
     padding: 0.6rem;
-    border: 2px solid var(--color-gold-dark);
-    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(140, 106, 35, 0.82);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.025);
     color: var(--color-paper);
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 0.9rem;
-    filter: url(#woodcut-roughness);
     transition: all var(--transition-fast);
 }
 
 .radio-label input:checked + .custom-radio {
-    background: linear-gradient(135deg, rgba(219, 180, 97, 0.18) 0%, rgba(166, 126, 50, 0.35) 100%);
+    background:
+        radial-gradient(circle at 50% 0%, rgba(217, 180, 97, 0.18), transparent 58%),
+        linear-gradient(135deg, rgba(219, 180, 97, 0.15) 0%, rgba(166, 126, 50, 0.25) 100%);
     color: var(--color-gold);
     border-color: var(--color-gold);
-    box-shadow: 0 0 15px rgba(219, 180, 97, 0.4);
+    box-shadow: 0 0 0 1px rgba(217, 180, 97, 0.18), 0 0 18px rgba(219, 180, 97, 0.2);
 }
 
 .radio-label input:checked + .custom-radio .mode-description {
@@ -524,6 +667,10 @@ body::before {
     color: var(--color-paper);
     margin-top: 0.4rem;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
 }
 
 .ritual-status-bar {
@@ -723,6 +870,7 @@ body::before {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    gap: 0.28rem;
     filter: url(#woodcut-roughness);
     transition: all var(--transition-fast);
 }
@@ -736,7 +884,7 @@ body::before {
 .score-name {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -747,11 +895,40 @@ body::before {
     gap: 0.3rem;
 }
 
+.score-archetype {
+    color: rgba(217, 180, 97, 0.74);
+    font-family: var(--font-heading);
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
 .score-lives {
     display: flex;
     gap: 3px;
     margin-top: 0.3rem;
     font-size: 1.05rem;
+}
+
+.score-drinks {
+    color: var(--color-gold);
+    font-family: var(--font-heading);
+    font-size: 0.86rem;
+    font-weight: 800;
+    line-height: 1.05;
+    text-transform: uppercase;
+}
+
+.score-points {
+    color: rgba(245, 242, 235, 0.72);
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-transform: uppercase;
 }
 
 .chalice-icon {
@@ -973,6 +1150,13 @@ body::before {
     gap: 0.5rem;
 }
 
+.confession-player-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .confession-btn:hover {
     background-color: rgba(255, 255, 255, 0.08);
     border-color: var(--color-gold);
@@ -996,6 +1180,40 @@ body::before {
     opacity: 1;
     filter: none;
     transform: scale(1.15);
+}
+
+.round-action-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.round-action-btn {
+    min-height: 54px;
+    border: 2px solid var(--color-gold-dark);
+    background:
+        linear-gradient(180deg, rgba(217, 180, 97, 0.13), rgba(8, 6, 12, 0.38)),
+        rgba(255, 255, 255, 0.04);
+    color: var(--color-paper);
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 0.82rem 0.9rem;
+    text-transform: uppercase;
+    transition: all var(--transition-fast);
+}
+
+.round-action-btn:hover {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 12px rgba(217, 180, 97, 0.2);
+    transform: translateY(-1px);
+}
+
+.round-action-btn-wide {
+    width: 100%;
 }
 
 /* ==========================================================================
@@ -1039,6 +1257,14 @@ body::before {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.ranking-player-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
 }
 
 .ranking-lives-info {
@@ -1778,6 +2004,11 @@ body.theme-cosmic .score-item.arch-gato-preto {
     cursor: pointer;
     transition: all var(--transition-fast);
     filter: url(#woodcut-roughness);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    min-height: 44px;
 }
 
 .minigame-select-btn.selected {
@@ -1846,5 +2077,3 @@ body.theme-cosmic .score-item.arch-gato-preto {
 .grimoire-item-confessed strong {
     color: var(--color-crimson);
 }
-
-

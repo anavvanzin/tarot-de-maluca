@@ -3,7 +3,14 @@
 // ==========================================================================
 
 const MAX_LIVES = 5;
-const PLAYER_ICONS = ['🦉', '🐍', '💀', '🍷', '☀️', '🌙', '🌟', '🗝️', '🐺', '🔥'];
+const MAX_PLAYERS = 10;
+const SPECIAL_CARD_AVATAR_SLUGS = {
+    22: 'andressa',
+    23: 'patricia',
+    24: 'sabrina',
+    25: 'shai',
+    26: 'ana'
+};
 
 // Sound Settings
 let soundEnabled = true;
@@ -40,13 +47,37 @@ const ALL_CARDS = [
     { id: 26, title: "A ANA", num: "XXVI", image: "assets/arcana-ana.png", text: "andei com uma caneca de metal pela casa fingindo sobriedade, tirei foto com fundo de nuvens falsas ou fiz mais uma tatuagem minimalista no braço." }
 ];
 
+const SUECA_ACTION_CARDS = [
+    { id: 200, kind: "dare", title: "A PROVA", num: "✦", drink: 2, points: 3, text: "mostre a última foto da sua galeria para a roda. Sem explicar, sem apagar, sem enrolar." },
+    { id: 201, kind: "dare", title: "O VÁCUO", num: "✦", drink: 3, points: 4, text: "mande um áudio de 'oi sumida' para a última garota que te deixou no vácuo." },
+    { id: 202, kind: "dare", title: "A CANTADA", num: "✦", drink: 1, points: 2, text: "imite a pior cantada que já jogaram em você, com voz e pose." },
+    { id: 203, kind: "dare", title: "O ELOGIO", num: "✦", drink: 1, points: 2, text: "olhe para a jogadora à esquerda e faça um elogio sincero por dez segundos." },
+    { id: 204, kind: "dare", title: "O DORAMA", num: "✦", drink: 2, points: 3, text: "declare-se para a jogadora à direita como se fosse cena final de dorama na chuva." },
+    { id: 300, kind: "target", title: "O DESEJO", num: "↺", drink: 1, points: 1, text: "escolha uma jogadora para beber por você." },
+    { id: 301, kind: "target", title: "A MALDIÇÃO", num: "↺", drink: 2, points: 1, text: "aponte sem dó: a escolhida bebe dois goles." },
+    { id: 302, kind: "group", title: "A CASCATA", num: "↺", drink: 1, points: 1, text: "a jogadora atual começa. Em sentido horário, todas bebem um gole." },
+    { id: 303, kind: "rule", title: "A REGRA", num: "✶", drink: 1, points: 2, text: "crie uma regra para a mesa. Quem quebrar bebe um gole até a próxima carta de regra." },
+    { id: 400, kind: "vote", title: "A U-HAUL", num: "✺", drink: 1, points: 1, text: "a roda escolhe: quem mudaria para a casa do crush antes do terceiro encontro?" },
+    { id: 401, kind: "vote", title: "O TEXTÃO", num: "✺", drink: 1, points: 1, text: "a roda escolhe: quem manda o textão mais dramático às três da manhã?" },
+    { id: 402, kind: "vote", title: "A STALKER", num: "✺", drink: 2, points: 1, text: "a roda escolhe: quem descobre signo, ascendente e CEP de um crush em uma noite?" }
+];
+
+const CARD_KIND_META = {
+    confession: { label: "Eu nunca...", symbol: "✶", title: "Quem confessa bebe?", prompt: "Marque quem já fez. Cada marcada bebe." },
+    dare: { label: "Prenda", symbol: "✦", title: "Cumpre ou bebe?", prompt: "A jogadora da vez escolhe: cumprir a prenda ou pagar em goles." },
+    target: { label: "Reviravolta", symbol: "↺", title: "Escolha quem bebe", prompt: "A jogadora da vez aponta uma pessoa para pagar a carta." },
+    group: { label: "Mesa inteira", symbol: "☾", title: "Todo mundo bebe", prompt: "Carta coletiva: resolva e passe a vez." },
+    rule: { label: "Regra", symbol: "✶", title: "Nova regra da mesa", prompt: "Crie uma regra rápida. Quem quebrar, bebe." },
+    vote: { label: "Votação", symbol: "✺", title: "A roda escolhe", prompt: "Votem na mesa e selecione quem vai beber." }
+};
+
 // Active State
 let players = [
-    { name: "Sabrina", lives: MAX_LIVES, icon: PLAYER_ICONS[0], archetype: "labrador" },
-    { name: "Shai", lives: MAX_LIVES, icon: PLAYER_ICONS[1], archetype: "gato-preto" },
-    { name: "Andressa", lives: MAX_LIVES, icon: PLAYER_ICONS[2], archetype: "labrador" },
-    { name: "Patrícia", lives: MAX_LIVES, icon: PLAYER_ICONS[3], archetype: "gato-preto" },
-    { name: "Ana", lives: MAX_LIVES, icon: PLAYER_ICONS[4], archetype: "gato-preto" }
+    { name: "Sabrina", lives: MAX_LIVES, avatarSlug: "sabrina", archetype: "labrador" },
+    { name: "Shai", lives: MAX_LIVES, avatarSlug: "shai", archetype: "gato-preto" },
+    { name: "Andressa", lives: MAX_LIVES, avatarSlug: "andressa", archetype: "labrador" },
+    { name: "Patrícia", lives: MAX_LIVES, avatarSlug: "patricia", archetype: "gato-preto" },
+    { name: "Ana", lives: MAX_LIVES, avatarSlug: "ana", archetype: "gato-preto" }
 ];
 let cardDeck = [];
 let activePlayerIndex = 0;
@@ -55,7 +86,7 @@ let confessedPlayers = new Set(); // holds indexes of players who confessed for 
 let currentTheme = 'gold';
 
 // Game Mode & Special States
-let gameMode = 'survival'; // 'survival' or 'sueca'
+let gameMode = 'sueca';
 let activeRules = [];      // Custom rules created during the game
 let questionMasterIndex = -1;
 let toiletPassIndex = -1;
@@ -90,7 +121,9 @@ const cardFlip3d = document.getElementById("card-flip-3d");
 const arcanaNumberText = document.getElementById("arcana-number");
 const arcanaTitleText = document.getElementById("arcana-title");
 const arcanaIllustration = document.getElementById("arcana-illustration");
+const cardKindPrefixText = document.getElementById("card-kind-prefix");
 const arcanaStatementText = document.getElementById("arcana-statement");
+const confessionTitleText = document.getElementById("confession-title-text");
 const listConfessionPlayers = document.getElementById("confession-players-list");
 const btnSubmitConfession = document.getElementById("btn-submit-confession");
 
@@ -539,18 +572,11 @@ function switchScreen(toScreen) {
 // ==========================================================================
 
 function setupNewGame() {
-    const selectedMode = document.querySelector('input[name="game-mode"]:checked');
-    gameMode = selectedMode ? selectedMode.value : 'survival';
+    gameMode = 'sueca';
+    players = players.map(p => ({ ...p, lives: 0, points: 0 }));
+    scoreboardTitleText.textContent = "Goles & Glória";
 
-    if (gameMode === 'sueca') {
-        players = players.map(p => ({ ...p, lives: 0 })); // in sueca, we track sips taken
-        scoreboardTitleText.textContent = "Goles Consumidos";
-    } else {
-        players = players.map(p => ({ ...p, lives: MAX_LIVES }));
-        scoreboardTitleText.textContent = "Cálices de Essência";
-    }
-
-    cardDeck = shuffle([...ALL_CARDS, ...customCards]);
+    cardDeck = buildSuecaDeck();
     totalCardsInSession = cardDeck.length;
     revealedCardsCount = 0;
     lastOmenText = "A mesa ainda aguarda o primeiro presságio.";
@@ -586,23 +612,17 @@ function shuffle(array) {
 
 function prepareNextTurn() {
     if (players.length === 0) return;
-    
-    // Check if game over condition is met
-    if (gameMode === 'survival') {
-        const deadPlayers = players.filter(p => p.lives <= 0);
-        if (deadPlayers.length > 0 || cardDeck.length === 0) {
-            endGame();
-            return;
-        }
-    } else { // sueca mode ends when deck is empty
-        if (cardDeck.length === 0) {
-            endGame();
-            return;
-        }
+
+    if (cardDeck.length === 0) {
+        endGame();
+        return;
     }
 
     const activePlayer = players[activePlayerIndex];
-    activePlayerNameText.textContent = `${activePlayer.icon} ${activePlayer.name}`;
+    activePlayerNameText.innerHTML = `
+        ${renderPlayerAvatar(activePlayer, "active-player-avatar")}
+        <span>${escapeHTML(activePlayer.name)}</span>
+    `;
     
     // Highlight active player on scoreboard
     updateScoreboard();
@@ -610,7 +630,7 @@ function prepareNextTurn() {
 }
 
 function getGameModeLabel() {
-    return gameMode === 'sueca' ? 'Roda de Bar' : 'Sobrevivência';
+    return 'Sueca de Maluca';
 }
 
 function updateRitualStatus() {
@@ -635,6 +655,117 @@ function formatNameList(names) {
     if (names.length <= 1) return names[0] || "";
     if (names.length === 2) return `${names[0]} e ${names[1]}`;
     return `${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}`;
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]));
+}
+
+function normalizePlayerName(name) {
+    return name
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+}
+
+function getAvatarSlugForName(name) {
+    return {
+        sabrina: "sabrina",
+        shai: "shai",
+        andressa: "andressa",
+        patricia: "patricia",
+        ana: "ana"
+    }[normalizePlayerName(name)] || null;
+}
+
+function getPlayerAvatarSlug(player) {
+    return player.avatarSlug || getAvatarSlugForName(player.name);
+}
+
+function getPlayerAvatarSrc(player) {
+    const slug = getPlayerAvatarSlug(player);
+    return slug ? `assets/${slug}-${currentTheme}.png` : "";
+}
+
+function getPlayerInitial(name) {
+    return Array.from(name.trim())[0]?.toLocaleUpperCase("pt-BR") || "?";
+}
+
+function renderPlayerAvatar(player, className = "player-avatar") {
+    const slug = getPlayerAvatarSlug(player);
+    if (slug) {
+        const src = getPlayerAvatarSrc(player);
+        return `<span class="${className}" aria-hidden="true"><img class="${className}-img" src="${src}" alt="" loading="lazy" decoding="async" data-avatar-slug="${slug}"></span>`;
+    }
+
+    return `<span class="${className} ${className}--initial" aria-hidden="true">${escapeHTML(getPlayerInitial(player.name))}</span>`;
+}
+
+function refreshRenderedAvatarImages() {
+    document.querySelectorAll("img[data-avatar-slug]").forEach((img) => {
+        img.src = `assets/${img.dataset.avatarSlug}-${currentTheme}.png`;
+    });
+}
+
+function getArchetypeLabel(archetype) {
+    return archetype === "labrador" ? "Labrador" : "Gato Preto";
+}
+
+function getCardKind(card) {
+    return card?.kind || "confession";
+}
+
+function getCardMeta(card) {
+    return CARD_KIND_META[getCardKind(card)] || CARD_KIND_META.confession;
+}
+
+function getDrinkCount(card) {
+    if (card?.drink) return card.drink;
+    if ([13, 15, 20].includes(card?.id)) return 2;
+    return 1;
+}
+
+function getPointValue(card) {
+    if (card?.points) return card.points;
+    return getCardKind(card) === "confession" ? 1 : 2;
+}
+
+function buildSuecaDeck() {
+    const confessionCards = ALL_CARDS.map(card => ({
+        ...card,
+        kind: "confession",
+        drink: getDrinkCount(card),
+        points: 1
+    }));
+    const forgedCards = customCards.map(card => ({
+        ...card,
+        kind: card.kind || "confession",
+        drink: card.drink || 1,
+        points: card.points || 1
+    }));
+
+    return shuffle([...confessionCards, ...SUECA_ACTION_CARDS, ...forgedCards]);
+}
+
+function pluralizeGole(count) {
+    return `${count} ${count === 1 ? "gole" : "goles"}`;
+}
+
+function addSips(playerIndex, count) {
+    if (!players[playerIndex]) return;
+    players[playerIndex].lives = (players[playerIndex].lives || 0) + count;
+}
+
+function addPoints(playerIndex, count) {
+    if (!players[playerIndex]) return;
+    players[playerIndex].points = (players[playerIndex].points || 0) + count;
 }
 
 function setupMiniGameForCard(card) {
@@ -723,7 +854,7 @@ function setupMiniGameForCard(card) {
                         if (idx !== activePlayerIndex) {
                             const btn = document.createElement("button");
                             btn.className = "minigame-select-btn";
-                            btn.textContent = `${p.icon} ${p.name}`;
+                            btn.innerHTML = `${renderPlayerAvatar(p, "mini-player-avatar")}<span>${escapeHTML(p.name)}</span>`;
                             btn.addEventListener("click", () => {
                                 partnerships[activePlayerIndex] = idx;
                                 partnerships[idx] = activePlayerIndex;
@@ -757,7 +888,7 @@ function setupMiniGameForCard(card) {
                     players.forEach((p, idx) => {
                         const btn = document.createElement("button");
                         btn.className = "minigame-select-btn";
-                        btn.textContent = `${p.icon} ${p.name}`;
+                        btn.innerHTML = `${renderPlayerAvatar(p, "mini-player-avatar")}<span>${escapeHTML(p.name)}</span>`;
                         btn.addEventListener("click", () => {
                             container.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
                             btn.classList.add("selected");
@@ -828,7 +959,7 @@ function setupMiniGameForCard(card) {
                     players.forEach((p, idx) => {
                         const btn = document.createElement("button");
                         btn.className = "minigame-select-btn";
-                        btn.textContent = `${p.icon} ${p.name}`;
+                        btn.innerHTML = `${renderPlayerAvatar(p, "mini-player-avatar")}<span>${escapeHTML(p.name)}</span>`;
                         btn.addEventListener("click", () => {
                             container.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
                             btn.classList.add("selected");
@@ -916,67 +1047,47 @@ function setupMiniGameForCard(card) {
     }
 }
 
-function drawCard() {
-    if (cardDeck.length === 0) {
-        endGame();
-        return;
+function finishSuecaRound(summary, drankIndexes = []) {
+    gameHistory.push({
+        cardTitle: currentCard.title,
+        cardText: currentCard.text,
+        targetPlayer: players[activePlayerIndex].name,
+        summary
+    });
+
+    lastOmenText = summary;
+    updateScoreboard();
+    updateRitualStatus();
+    triggerBurst(window.innerWidth / 2, window.innerHeight / 2);
+    if (drankIndexes.length > 0) {
+        setTimeout(() => playSound('confess'), 220);
     }
 
-    // Clean round-specific temporary rules
-    activeRules = activeRules.filter(r => !r.includes("Voto de Silêncio"));
-    renderActiveRules();
-
-    playSound('draw');
-    currentCard = cardDeck.pop();
-    revealedCardsCount += 1;
-    lastOmenText = `${currentCard.title} foi retirado por ${players[activePlayerIndex].name}.`;
-    confessedPlayers.clear();
-
-    // Populate Card details
-    arcanaNumberText.textContent = currentCard.num;
-    arcanaTitleText.textContent = currentCard.title;
-    
-    // Card illustration logic
-    arcanaIllustration.className = 'card-illustration';
-    if (currentCard.image) {
-        let imgUrl = currentCard.image;
-        if (currentCard.id >= 22 && currentCard.id <= 26) {
-            const playerNamesMap = {
-                22: 'andressa',
-                23: 'patricia',
-                24: 'sabrina',
-                25: 'shai',
-                26: 'ana'
-            };
-            imgUrl = `assets/${playerNamesMap[currentCard.id]}-${currentTheme}.png`;
+    activePlayerIndex = (activePlayerIndex + 1) % players.length;
+    setTimeout(() => {
+        if (cardDeck.length === 0) {
+            endGame();
+        } else {
+            prepareNextTurn();
+            switchScreen(screenGameplay);
         }
-        arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
-    } else if (currentCard.isCustom) {
-        arcanaIllustration.style.backgroundImage = 'none';
-        arcanaIllustration.innerHTML = `<div class="custom-card-symbol-badge">${currentCard.customSymbol}</div>`;
-    } else {
-        arcanaIllustration.innerHTML = '';
-        arcanaIllustration.classList.add('placeholder-art');
-        arcanaIllustration.style.backgroundImage = 'none';
-    }
+    }, 720);
+}
 
-    // Statement text (special description if applicable)
-    if (currentCard.special) {
-        arcanaStatementText.innerHTML = `<strong>${currentCard.special}</strong><br><br>"${currentCard.text}"`;
-    } else {
-        arcanaStatementText.textContent = `"${currentCard.text}"`;
-    }
-
-    // Set up confession checklist
-    listConfessionPlayers.innerHTML = '';
-    const confessionMark = gameMode === 'sueca' ? '🍺' : '🍷';
+function renderConfessionResolver() {
+    const drink = getDrinkCount(currentCard);
+    listConfessionPlayers.className = "confession-grid";
     players.forEach((player, idx) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "confession-btn";
         btn.setAttribute("data-player-index", idx);
-        btn.innerHTML = `<span class="player-icon">${player.icon}</span> ${player.name} <span class="confession-mark">${confessionMark}</span>`;
-        
+        btn.innerHTML = `
+            ${renderPlayerAvatar(player, "confession-avatar")}
+            <span class="confession-player-name">${escapeHTML(player.name)}</span>
+            <span class="confession-mark">+${drink}</span>
+        `;
+
         btn.addEventListener("click", () => {
             playSound('click');
             if (confessedPlayers.has(idx)) {
@@ -989,17 +1100,126 @@ function drawCard() {
         });
         listConfessionPlayers.appendChild(btn);
     });
+    btnSubmitConfession.style.display = "";
+    btnSubmitConfession.textContent = "Resolver Rodada";
+}
 
-    // Setup the mini-game widget if sueca mode is active
-    setupMiniGameForCard(currentCard);
+function renderDareResolver() {
+    const active = players[activePlayerIndex];
+    const drink = getDrinkCount(currentCard);
+    const points = getPointValue(currentCard);
+    listConfessionPlayers.className = "round-action-grid";
+
+    [
+        { label: `Cumpri +${points} pts`, outcome: "did" },
+        { label: `Bebi ${pluralizeGole(drink)}`, outcome: "drink" },
+        { label: `Fiz e bebi +${points + 1} pts`, outcome: "both" }
+    ].forEach(option => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "round-action-btn";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => resolveDare(option.outcome));
+        listConfessionPlayers.appendChild(btn);
+    });
+
+    btnSubmitConfession.style.display = "none";
+    confessionTitleText.textContent = `${active.name}: cumpre ou bebe?`;
+}
+
+function renderTargetResolver(includeActive = false) {
+    const drink = getDrinkCount(currentCard);
+    listConfessionPlayers.className = "confession-grid";
+    players.forEach((player, idx) => {
+        if (!includeActive && idx === activePlayerIndex) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "confession-btn";
+        btn.innerHTML = `
+            ${renderPlayerAvatar(player, "confession-avatar")}
+            <span class="confession-player-name">${escapeHTML(player.name)}</span>
+            <span class="confession-mark">+${drink}</span>
+        `;
+        btn.addEventListener("click", () => resolveTarget(idx));
+        listConfessionPlayers.appendChild(btn);
+    });
+    btnSubmitConfession.style.display = "none";
+}
+
+function renderSingleActionResolver(label, onResolve) {
+    listConfessionPlayers.className = "round-action-grid";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "round-action-btn round-action-btn-wide";
+    btn.textContent = label;
+    btn.addEventListener("click", onResolve);
+    listConfessionPlayers.appendChild(btn);
+    btnSubmitConfession.style.display = "none";
+}
+
+function renderRoundResolver() {
+    const meta = getCardMeta(currentCard);
+    const drink = getDrinkCount(currentCard);
+    listConfessionPlayers.innerHTML = '';
+    if (minigameContainer) {
+        minigameContainer.classList.add("hidden");
+        minigameContainer.innerHTML = '';
+    }
+    confessionTitleText.textContent = meta.title;
+    document.getElementById("confession-subtitle-text").textContent = `${meta.prompt} Valor: ${pluralizeGole(drink)}.`;
+
+    if (getCardKind(currentCard) === "confession") {
+        renderConfessionResolver();
+    } else if (getCardKind(currentCard) === "dare") {
+        renderDareResolver();
+    } else if (getCardKind(currentCard) === "target") {
+        renderTargetResolver(false);
+    } else if (getCardKind(currentCard) === "vote") {
+        renderTargetResolver(true);
+    } else if (getCardKind(currentCard) === "group") {
+        renderSingleActionResolver(`Todo mundo bebe ${pluralizeGole(drink)}`, resolveGroupCard);
+    } else if (getCardKind(currentCard) === "rule") {
+        renderSingleActionResolver("Regra criada, passar a vez", resolveRuleCard);
+    }
+}
+
+function drawCard() {
+    if (cardDeck.length === 0) {
+        endGame();
+        return;
+    }
+
+    playSound('draw');
+    currentCard = cardDeck.pop();
+    const meta = getCardMeta(currentCard);
+    revealedCardsCount += 1;
+    lastOmenText = `${currentCard.title} saiu para ${players[activePlayerIndex].name}.`;
+    confessedPlayers.clear();
+
+    arcanaNumberText.textContent = currentCard.num || meta.symbol;
+    arcanaTitleText.textContent = currentCard.title;
+    cardKindPrefixText.textContent = meta.label;
+
+    arcanaIllustration.className = 'card-illustration';
+    arcanaIllustration.innerHTML = '';
+    if (currentCard.image) {
+        let imgUrl = currentCard.image;
+        if (SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]) {
+            imgUrl = `assets/${SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]}-${currentTheme}.png`;
+        }
+        arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
+    } else {
+        arcanaIllustration.style.backgroundImage = 'none';
+        arcanaIllustration.innerHTML = `<div class="custom-card-symbol-badge">${currentCard.customSymbol || meta.symbol}</div>`;
+    }
+
+    arcanaStatementText.textContent = `"${currentCard.text}"`;
+    renderRoundResolver();
     updateRitualStatus();
 
-    // Reset 3D card layout rotation
     cardFlip3d.classList.remove("flipped");
-
     switchScreen(screenReveal);
 
-    // Perform flip animation after screen transition
     setTimeout(() => {
         playSound('flip');
         cardFlip3d.classList.add("flipped");
@@ -1008,194 +1228,75 @@ function drawCard() {
 }
 
 function submitConfession() {
+    if (!currentCard || getCardKind(currentCard) !== "confession") return;
     playSound('click');
-
-    const totalConfessed = confessedPlayers.size;
-    const majorityThreshold = players.length / 2;
-    const minLivesBefore = Math.min(...players.map(p => p.lives));
-    
-    // Save lives before update to check for damage (survival mode)
-    const livesBefore = players.map(p => p.lives);
-
-    if (gameMode === 'sueca') {
-        const additionalDrinkers = new Set();
-        players.forEach((player, idx) => {
-            if (confessedPlayers.has(idx)) {
-                let sips = 1;
-                if ([5, 7, 8, 16].includes(currentCard.id)) {
-                    sips = 2;
-                } else if ([13, 15].includes(currentCard.id)) {
-                    sips = 3;
-                }
-                player.lives += sips;
-
-                // Os Enamorados partnership check
-                if (partnerships[idx] !== undefined) {
-                    additionalDrinkers.add(partnerships[idx]);
-                }
-            }
-        });
-
-        // Apply sips to partners
-        additionalDrinkers.forEach(partnerIdx => {
-            if (!confessedPlayers.has(partnerIdx)) {
-                players[partnerIdx].lives += 1;
-            }
-        });
-    } else {
-        // Survival Mode
-        players.forEach((player, idx) => {
-            if (currentCard.id === 10) { // Roda da Fortuna
-                if (confessedPlayers.has(idx)) {
-                    player.lives = Math.min(MAX_LIVES, player.lives + 1);
-                } else {
-                    player.lives = Math.max(0, player.lives - 1);
-                }
-            } else if (currentCard.id === 6) { // Os Enamorados
-                if (totalConfessed === 2) {
-                    // Protected!
-                } else {
-                    if (confessedPlayers.has(idx)) {
-                        player.lives = Math.max(0, player.lives - 1);
-                    }
-                }
-            } else if (currentCard.id === 11) { // A Força
-                if (totalConfessed === 1) {
-                    // Protected!
-                } else {
-                    if (confessedPlayers.has(idx)) {
-                        player.lives = Math.max(0, player.lives - 1);
-                    }
-                }
-            } else if (currentCard.id === 20) { // O Julgamento
-                if (totalConfessed > majorityThreshold) {
-                    // Protected!
-                } else {
-                    if (confessedPlayers.has(idx)) {
-                        player.lives = Math.max(0, player.lives - 2);
-                    }
-                }
-            } else if (currentCard.id === 9) { // O Eremita
-                if (totalConfessed === players.length - 1 && !confessedPlayers.has(idx)) {
-                    player.lives = Math.min(MAX_LIVES, player.lives + 1);
-                } else if (confessedPlayers.has(idx)) {
-                    player.lives = Math.max(0, player.lives - 2);
-                }
-            } else if (currentCard.id === 12) { // O Enforcado
-                if (totalConfessed === 1) {
-                    if (confessedPlayers.has(idx)) {
-                        player.lives = Math.max(0, player.lives - 2);
-                    } else {
-                        player.lives = Math.min(MAX_LIVES, player.lives + 1);
-                    }
-                } else {
-                    if (confessedPlayers.has(idx)) {
-                        player.lives = Math.max(0, player.lives - 1);
-                    }
-                }
-            } else if (currentCard.id === 13) { // A Morte
-                if (player.lives === minLivesBefore) {
-                    // Protected!
-                } else {
-                    if (confessedPlayers.has(idx)) {
-                        player.lives = Math.max(0, player.lives - 1);
-                    }
-                }
-            } else if (currentCard.id === 17) { // A Estrela
-                if (totalConfessed === 0) {
-                    player.lives = Math.min(MAX_LIVES, player.lives + 1);
-                } else {
-                    if (confessedPlayers.has(idx)) {
-                        player.lives = Math.max(0, player.lives - 1);
-                    }
-                }
-            } else { // Standard card
-                if (confessedPlayers.has(idx)) {
-                    player.lives = Math.max(0, player.lives - 1);
-                }
-            }
-        });
-    }
-
-    // Record turn to game history
-    const confessedList = players.filter((_, i) => confessedPlayers.has(i));
-    const confessedNames = confessedList.map(p => p.name);
-    gameHistory.push({
-        cardTitle: currentCard.title,
-        cardText: currentCard.text,
-        targetPlayer: players[activePlayerIndex].name,
-        confessed: confessedNames
+    const drink = getDrinkCount(currentCard);
+    const pointValue = getPointValue(currentCard);
+    const drinkers = Array.from(confessedPlayers);
+    drinkers.forEach(idx => {
+        addSips(idx, drink);
+        addPoints(idx, pointValue);
     });
 
-    if (gameMode === 'sueca') {
-        const action = confessedNames.length === 1 ? "bebeu" : "beberam";
-        lastOmenText = confessedNames.length
-            ? `${currentCard.title}: ${formatNameList(confessedNames)} ${action} sob o presságio.`
-            : `${currentCard.title}: ninguém bebeu neste presságio.`;
-    } else {
-        const action = confessedNames.length === 1 ? "confessou" : "confessaram";
-        lastOmenText = confessedNames.length
-            ? `${currentCard.title}: ${formatNameList(confessedNames)} ${action}.`
-            : `${currentCard.title}: nenhuma alma confessou.`;
+    const names = drinkers.map(idx => players[idx].name);
+    const action = names.length === 1 ? "bebeu" : "beberam";
+    const summary = names.length
+        ? `${currentCard.title}: ${formatNameList(names)} ${action} ${pluralizeGole(drink)}.`
+        : `${currentCard.title}: ninguém confessou, ninguém bebeu.`;
+    finishSuecaRound(summary, drinkers);
+}
+
+function resolveDare(outcome) {
+    playSound('click');
+    const drink = getDrinkCount(currentCard);
+    const points = getPointValue(currentCard);
+    const active = players[activePlayerIndex];
+    const drank = [];
+
+    if (outcome === "did") {
+        addPoints(activePlayerIndex, points);
+        finishSuecaRound(`${active.name} cumpriu ${currentCard.title} e ganhou ${points} pontos.`);
+        return;
     }
 
-    // Update scoreboard
-    updateScoreboard();
-    updateRitualStatus();
-
-    // Trigger visual explosion in the center of the screen
-    triggerBurst(window.innerWidth / 2, window.innerHeight / 2);
-
-    // Hide mini-game box on screen change
-    if (minigameContainer) {
-        minigameContainer.classList.add("hidden");
+    if (outcome === "drink") {
+        addSips(activePlayerIndex, drink);
+        drank.push(activePlayerIndex);
+        finishSuecaRound(`${active.name} recusou ${currentCard.title} e bebeu ${pluralizeGole(drink)}.`, drank);
+        return;
     }
 
-    // Sound effect if someone confessed or recovered life
-    const recoveredLifeInStar = (currentCard.id === 17 && totalConfessed === 0);
-    const recoveredLifeInEnforcado = (currentCard.id === 12 && totalConfessed === 1);
-    if (confessedPlayers.size > 0 || recoveredLifeInStar || recoveredLifeInEnforcado) {
-        setTimeout(() => playSound('confess'), 300);
-    }
+    addSips(activePlayerIndex, drink);
+    addPoints(activePlayerIndex, points + 1);
+    drank.push(activePlayerIndex);
+    finishSuecaRound(`${active.name} fez a prenda e ainda bebeu ${pluralizeGole(drink)}.`, drank);
+}
 
-    // playGlassShatter and heartbeat checks for survival mode
-    if (gameMode === 'survival') {
-        const anyoneLostLife = players.some((p, idx) => p.lives < livesBefore[idx]);
-        if (anyoneLostLife) {
-            setTimeout(() => playGlassShatter(), 150);
-        }
-        
-        const minLivesAfter = Math.min(...players.map(p => p.lives));
-        if (minLivesAfter === 1) {
-            startHeartbeat(1);
-        } else {
-            stopHeartbeat();
-        }
-    }
+function resolveTarget(targetIndex) {
+    playSound('click');
+    const drink = getDrinkCount(currentCard);
+    const target = players[targetIndex];
+    const active = players[activePlayerIndex];
+    addSips(targetIndex, drink);
+    addPoints(activePlayerIndex, getPointValue(currentCard));
+    finishSuecaRound(`${active.name} mandou ${target.name} beber ${pluralizeGole(drink)}.`, [targetIndex]);
+}
 
-    // Advance turn to next player
-    activePlayerIndex = (activePlayerIndex + 1) % players.length;
+function resolveGroupCard() {
+    playSound('click');
+    const drink = getDrinkCount(currentCard);
+    const drinkers = players.map((_, idx) => idx);
+    drinkers.forEach(idx => addSips(idx, drink));
+    finishSuecaRound(`${currentCard.title}: a mesa inteira bebeu ${pluralizeGole(drink)}.`, drinkers);
+}
 
-    // Check game over condition or transition back to deck
-    setTimeout(() => {
-        if (gameMode === 'survival') {
-            const deadPlayers = players.filter(p => p.lives <= 0);
-            if (deadPlayers.length > 0 || cardDeck.length === 0) {
-                endGame();
-            } else {
-                prepareNextTurn();
-                switchScreen(screenGameplay);
-            }
-        } else {
-            // Sueca mode gameplay check
-            if (cardDeck.length === 0) {
-                endGame();
-            } else {
-                prepareNextTurn();
-                switchScreen(screenGameplay);
-            }
-        }
-    }, 800);
+function resolveRuleCard() {
+    playSound('click');
+    const active = players[activePlayerIndex];
+    addPoints(activePlayerIndex, getPointValue(currentCard));
+    activeRules.push(`${active.name}: regra da mesa ativa`);
+    renderActiveRules();
+    finishSuecaRound(`${active.name} criou uma regra nova para a mesa.`);
 }
 
 function renderActiveRules() {
@@ -1250,15 +1351,7 @@ function renderActiveRules() {
 
 function updateCaliceSagradoDisplay() {
     if (!caliceSagradoContainer) return;
-    if (gameMode !== 'sueca') {
-        caliceSagradoContainer.classList.add("hidden");
-        return;
-    }
-
-    caliceSagradoContainer.classList.remove("hidden");
-    caliceSagradoCountText.textContent = `${caliceSagradoCount} ${caliceSagradoCount === 1 ? 'Gole' : 'Goles'}`;
-    const percent = Math.min(100, (caliceSagradoCount / 12) * 100);
-    caliceLiquidFill.style.width = `${percent}%`;
+    caliceSagradoContainer.classList.add("hidden");
 }
 
 function updateScoreboard() {
@@ -1271,25 +1364,16 @@ function updateScoreboard() {
             item.classList.add("active-turn");
         }
 
-        // Score display depending on gameMode
-        let scoreHtml = '';
-        if (gameMode === 'sueca') {
-            scoreHtml = `<span style="font-weight: 700; color: var(--color-gold); font-size: 1.1rem; margin-top: 0.3rem;">🍺 ${player.lives} ${player.lives === 1 ? 'Gole' : 'Goles'}</span>`;
-        } else {
-            let chalicesHtml = '';
-            for (let i = 1; i <= MAX_LIVES; i++) {
-                if (i <= player.lives) {
-                    chalicesHtml += `<span class="chalice-icon">🍷</span>`;
-                } else {
-                    chalicesHtml += `<span class="chalice-icon lost">🍷</span>`;
-                }
-            }
-            scoreHtml = `<div class="score-lives">${chalicesHtml}</div>`;
-        }
+        const scoreHtml = `
+            <span class="score-drinks">${player.lives || 0} ${player.lives === 1 ? 'gole' : 'goles'}</span>
+            <span class="score-points">${player.points || 0} pts</span>
+        `;
 
-        const archIcon = player.archetype === 'labrador' ? '🐕' : '🐈';
+        const archLabel = getArchetypeLabel(player.archetype);
         item.innerHTML = `
-            <span class="score-name">${player.icon} ${player.name} <span class="archetype-icon" title="${player.archetype}">${archIcon}</span></span>
+            ${renderPlayerAvatar(player, "score-avatar")}
+            <span class="score-name">${escapeHTML(player.name)}</span>
+            <span class="score-archetype">${archLabel}</span>
             ${scoreHtml}
         `;
         scoreboardPlayers.appendChild(item);
@@ -1300,18 +1384,16 @@ function endGame() {
     playSound('gameover');
     stopHeartbeat();
     
-    // Sort players depending on game mode
-    let rankedPlayers;
-    if (gameMode === 'sueca') {
-        rankedPlayers = [...players].sort((a, b) => a.lives - b.lives); // less sips is better
-    } else {
-        rankedPlayers = [...players].sort((a, b) => b.lives - a.lives); // more lives is better
-    }
+    const rankedPlayers = [...players].sort((a, b) => {
+        const pointsDiff = (b.points || 0) - (a.points || 0);
+        if (pointsDiff !== 0) return pointsDiff;
+        return (a.lives || 0) - (b.lives || 0);
+    });
 
     listGameoverRankings.innerHTML = '';
     
-    const maxRemainingLives = Math.max(...rankedPlayers.map(p => p.lives));
-    const minRemainingLives = Math.min(...rankedPlayers.map(p => p.lives));
+    const maxPoints = Math.max(...rankedPlayers.map(p => p.points || 0));
+    const maxDrinks = Math.max(...rankedPlayers.map(p => p.lives || 0));
 
     rankedPlayers.forEach((player, rank) => {
         const item = document.createElement("div");
@@ -1319,34 +1401,21 @@ function endGame() {
 
         // Assign mystical titles based on score and temperament
         let titleBadge = '';
-        const archLabel = player.archetype === 'labrador' ? 'Labrador' : 'Gato Preto';
-        const archIcon = player.archetype === 'labrador' ? '🐕' : '🐈';
+        const archLabel = getArchetypeLabel(player.archetype);
         
-        if (gameMode === 'sueca') {
-            if (player.lives === minRemainingLives) {
-                titleBadge = `<span class="ranking-title-badge pure">${archLabel} Sóbria</span>`;
-            } else if (player.lives === maxRemainingLives) {
-                titleBadge = `<span class="ranking-title-badge doomed">${archLabel} Ébria</span>`;
-            } else {
-                titleBadge = `<span class="ranking-title-badge">${archLabel} Cúmplice</span>`;
-            }
+        if ((player.points || 0) === maxPoints && maxPoints > 0) {
+            titleBadge = `<span class="ranking-title-badge pure">${archLabel} da Glória</span>`;
+        } else if ((player.lives || 0) === maxDrinks && maxDrinks > 0) {
+            titleBadge = `<span class="ranking-title-badge doomed">${archLabel} Afundada</span>`;
         } else {
-            if (player.lives === maxRemainingLives && player.lives > 0) {
-                titleBadge = `<span class="ranking-title-badge pure">${archLabel} Celestial</span>`;
-            } else if (player.lives === 0 || player.lives === minRemainingLives) {
-                titleBadge = `<span class="ranking-title-badge doomed">${archLabel} Caótico</span>`;
-            } else {
-                titleBadge = `<span class="ranking-title-badge">${archLabel} Cúmplice</span>`;
-            }
+            titleBadge = `<span class="ranking-title-badge">${archLabel} Cúmplice</span>`;
         }
 
-        const scoreText = gameMode === 'sueca'
-            ? `${player.lives} ${player.lives === 1 ? 'Gole' : 'Goles'}`
-            : `${player.lives} / ${MAX_LIVES} Cálices`;
+        const scoreText = `${player.points || 0} pts · ${player.lives || 0} ${player.lives === 1 ? 'gole' : 'goles'}`;
 
         item.innerHTML = `
             <div class="ranking-player-name">
-                <span>${rank + 1}. ${player.icon} ${player.name} <small style="opacity:0.75;">(${archIcon})</small></span>
+                <span class="ranking-player-main">${renderPlayerAvatar(player, "ranking-avatar")}<span>${rank + 1}. ${escapeHTML(player.name)}</span></span>
                 ${titleBadge}
             </div>
             <span class="ranking-lives-info">${scoreText}</span>
@@ -1362,7 +1431,7 @@ function endGame() {
 // ==========================================================================
 
 function addPlayer(name) {
-    if (players.length >= PLAYER_ICONS.length) {
+    if (players.length >= MAX_PLAYERS) {
         alert("O círculo místico atingiu o limite de almas!");
         return;
     }
@@ -1379,14 +1448,10 @@ function addPlayer(name) {
     // Get selected archetype
     const archetypeVal = document.querySelector('input[name="archetype"]:checked').value;
 
-    // Draw unique icon
-    const iconIndex = players.length;
-    const icon = PLAYER_ICONS[iconIndex];
-
     players.push({
         name: nameClean,
         lives: MAX_LIVES,
-        icon: icon,
+        avatarSlug: getAvatarSlugForName(nameClean),
         archetype: archetypeVal
     });
 
@@ -1401,11 +1466,6 @@ function addPlayer(name) {
 function removePlayer(idx) {
     playSound('click');
     players.splice(idx, 1);
-    
-    // Re-assign icons based on order
-    players.forEach((p, i) => {
-        p.icon = PLAYER_ICONS[i];
-    });
 
     renderLobbyPlayers();
 }
@@ -1423,11 +1483,12 @@ function renderLobbyPlayers() {
     players.forEach((player, idx) => {
         const li = document.createElement("li");
         li.className = "player-badge";
-        const archIcon = player.archetype === 'labrador' ? '🐕' : '🐈';
+        const archLabel = getArchetypeLabel(player.archetype);
         li.innerHTML = `
-            <span class="player-icon">${player.icon}</span>
-            <span>${player.name} <small style="font-size:0.75rem; opacity:0.8;">(${archIcon})</small></span>
-            <button class="remove-player-btn" aria-label="Remover ${player.name}" data-index="${idx}">&times;</button>
+            ${renderPlayerAvatar(player)}
+            <span class="player-badge-name">${escapeHTML(player.name)}</span>
+            <span class="player-archetype" aria-label="${archLabel}">${archLabel}</span>
+            <button class="remove-player-btn" aria-label="Remover ${escapeHTML(player.name)}" data-index="${idx}">&times;</button>
         `;
         
         li.querySelector(".remove-player-btn").addEventListener("click", (e) => {
@@ -1785,16 +1846,11 @@ if (themeSelector) {
         document.body.className = `theme-${currentTheme}`;
         playSound('click');
         
+        refreshRenderedAvatarImages();
+
         // Update active player card image if revealed
-        if (currentCard && (currentCard.id >= 22 && currentCard.id <= 26)) {
-            const playerNamesMap = {
-                22: 'andressa',
-                23: 'patricia',
-                24: 'sabrina',
-                25: 'shai',
-                26: 'ana'
-            };
-            const imgUrl = `assets/${playerNamesMap[currentCard.id]}-${currentTheme}.png`;
+        if (currentCard && SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]) {
+            const imgUrl = `assets/${SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]}-${currentTheme}.png`;
             arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
         }
         

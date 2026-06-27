@@ -52,74 +52,55 @@
         <main class="screens-container">
 
             <!-- SCREEN 1: LOBBY -->
-            <section id="screen-lobby" class="game-screen active" tabindex="-1" aria-labelledby="lobby-heading">
+            <section id="screen-lobby" class="game-screen lobby-screen active" tabindex="-1" aria-labelledby="lobby-heading">
                 <h2 id="lobby-heading" class="sr-only">Lobby de Configuração</h2>
-                
-                <div class="intro-box">
-                    <p class="intro-text">
-                        Bem-vindas à mesa do destino. Digitem seus nomes para sentarem-se em círculo. 
-                        A cada rodada, uma carta será revelada. Aquelas que já cometeram o pecado perderão um cálice de sua essência vital.
-                    </p>
-                </div>
 
                 <!-- Add player form -->
                 <form id="form-add-player" class="lobby-form" onsubmit="return false;">
-                    <div class="input-group">
-                        <label for="player-name-input" class="sr-only">Nome da Jogadora</label>
-                        <input type="text" id="player-name-input" placeholder="Nome da jogadora..." required maxlength="15" autocomplete="off">
+                    <div class="lobby-input-row">
+                        <div class="input-group">
+                            <label for="player-name-input" class="sr-only">Nome da Jogadora</label>
+                            <input type="text" id="player-name-input" placeholder="Nome da jogadora..." required maxlength="15" autocomplete="off">
+                        </div>
+                        <button type="submit" id="btn-add-player" class="btn-mystic btn-add-player" aria-label="Invocar no círculo">+</button>
                     </div>
+
                     <div class="archetype-selector">
-                        <span class="selector-label">Temperamento:</span>
+                        <span class="selector-label">Temperamento</span>
                         <div class="archetype-options">
                             <label class="radio-label">
                                 <input type="radio" name="archetype" value="labrador" checked>
-                                <span class="custom-radio">🐕 Labrador</span>
+                                <span class="custom-radio">Labrador</span>
                             </label>
                             <label class="radio-label">
                                 <input type="radio" name="archetype" value="gato-preto">
-                                <span class="custom-radio">🐈 Gato Preto</span>
+                                <span class="custom-radio">Gato Preto</span>
                             </label>
                         </div>
                     </div>
-                    <button type="submit" id="btn-add-player" class="btn-mystic btn-large" style="margin-top: 0.8rem;">Invocar no Círculo</button>
                 </form>
 
                 <!-- Players Circle -->
                 <div class="players-lobby-section">
                     <h3 class="section-title">O Círculo Invocado</h3>
-                    <ul id="lobby-players-list" class="players-list-badge">
+                    <ul id="lobby-players-list" class="players-list-badge" aria-label="Jogadoras invocadas">
                         <!-- Javascript will populate players here -->
                         <li class="empty-list-msg">Nenhuma alma invocada ainda...</li>
                     </ul>
                 </div>
 
-                <!-- Game Mode Selector -->
-                <div class="game-mode-selector-section">
-                    <span class="selector-label">Modo de Jogo:</span>
-                    <div class="game-mode-options">
-                        <label class="radio-label game-mode-card">
-                            <input type="radio" name="game-mode" value="survival" checked>
-                            <span class="custom-radio">
-                                <span class="mode-title">🍷 Sobrevivência (Vidas)</span>
-                                <span class="mode-description">5 vidas por jogadora. Quem confessar perde 1 cálice. O último a sobreviver vence.</span>
-                            </span>
-                        </label>
-                        <label class="radio-label game-mode-card">
-                            <input type="radio" name="game-mode" value="sueca">
-                            <span class="custom-radio">
-                                <span class="mode-title">🍻 Roda de Bar (Goles)</span>
-                                <span class="mode-description">Sem eliminação. Conta o número de goles. Cartas ativam minijogos de bebida (Sueca).</span>
-                            </span>
-                        </label>
-                    </div>
+                <!-- Table Mode -->
+                <div class="game-mode-selector-section sueca-mode-card">
+                    <span class="selector-label">Ritual da Mesa</span>
+                    <div class="mode-title">Sueca de Maluca</div>
+                    <div class="mode-description">Tire carta, cumpra a ordem ou beba. Sem eliminação: vence quem junta glória sem afundar nos goles.</div>
                 </div>
 
-                <div class="lobby-actions" style="display: flex; gap: 0.8rem; width: 100%;">
-                    <button type="button" id="btn-open-forge" class="btn-mystic btn-large" style="flex-grow: 1; margin-top: 1rem; background-color: transparent; color: var(--color-gold); border-color: var(--color-gold-dark);">Forjar Arcano</button>
-                    <button id="btn-start-game" class="btn-mystic btn-large disabled" style="flex-grow: 2; margin-top: 1rem;" disabled>Iniciar a Leitura</button>
+                <div class="lobby-actions">
+                    <button type="button" id="btn-open-forge" class="btn-mystic btn-secondary">Forjar Arcano</button>
+                    <button id="btn-start-game" class="btn-mystic btn-large disabled" disabled>Iniciar a Leitura</button>
                 </div>
             </section>
-
 
             <!-- SCREEN 2: GAMEPLAY (DECK SCREEN) -->
             <section id="screen-gameplay" class="game-screen" tabindex="-1" aria-labelledby="gameplay-heading">
@@ -133,7 +114,7 @@
                 <div id="ritual-status-bar" class="ritual-status-bar" aria-live="polite">
                     <span class="ritual-status-pill">
                         <span class="status-label">Modo</span>
-                        <strong id="ritual-mode-label">Sobrevivência</strong>
+                        <strong id="ritual-mode-label">Sueca de Maluca</strong>
                     </span>
                     <span class="ritual-status-pill">
                         <span class="status-label">Arcanos</span>
@@ -177,7 +158,7 @@
 
                 <!-- Floating/Drawer Scoreboard for Game Session -->
                 <div class="game-scoreboard">
-                    <h4 id="scoreboard-title-text" class="scoreboard-title">Cálices de Essência</h4>
+                    <h4 id="scoreboard-title-text" class="scoreboard-title">Goles & Glória</h4>
                     <div id="scoreboard-players" class="scoreboard-grid">
                         <!-- Dynamic scores -->
                     </div>
@@ -212,7 +193,7 @@
                                 </div>
 
                                 <div class="card-statement-container">
-                                    <p class="statement-prefix">Eu nunca...</p>
+                                    <p id="card-kind-prefix" class="statement-prefix">Eu nunca...</p>
                                     <blockquote id="arcana-statement" class="statement-text">
                                         "Stalkeei as redes sociais de alguém até achar postagens de cinco anos atrás."
                                     </blockquote>
@@ -224,8 +205,8 @@
 
                 <!-- Confession Section -->
                 <div class="confession-panel">
-                    <h3 class="confession-title">Quem confessa o pecado?</h3>
-                    <p id="confession-subtitle-text" class="confession-subtitle">Marque as jogadoras que já fizeram isso (perderão 1 cálice):</p>
+                    <h3 id="confession-title-text" class="confession-title">Quem bebe nesta rodada?</h3>
+                    <p id="confession-subtitle-text" class="confession-subtitle">Resolva a carta e passe a vez.</p>
                     
                     <!-- Special Mini-Game / Action widget -->
                     <div id="mystic-minigame-container" class="mystic-minigame-box hidden"></div>
@@ -234,7 +215,7 @@
                         <!-- JavaScript will generate player checkboxes/toggles -->
                     </div>
 
-                    <button id="btn-submit-confession" class="btn-mystic btn-large">Consignar ao Destino</button>
+                    <button id="btn-submit-confession" class="btn-mystic btn-large">Resolver Rodada</button>
                 </div>
             </section>
 

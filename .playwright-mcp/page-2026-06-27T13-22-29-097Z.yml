@@ -1,0 +1,75 @@
+- generic [active] [ref=e1]:
+  - combobox "Seletor de Tema" [ref=e4] [cursor=pointer]:
+    - option "✨ Místico & Ouro" [selected]
+    - option "📜 Xilogravura Clássica"
+    - option "🌌 Sáfico Cósmico"
+  - generic [ref=e5]:
+    - button "Abrir grimório" [ref=e6] [cursor=pointer]:
+      - generic [ref=e7]: 📖
+    - button "Alternar som" [ref=e8] [cursor=pointer]:
+      - generic [ref=e9]: 🔔
+  - generic [ref=e10]:
+    - banner [ref=e11]:
+      - heading "O Tarô de Maluca" [level=1] [ref=e12]
+      - paragraph [ref=e13]: Revele seus pecados e sele seu destino
+      - text: 🔸 ❖ 🔸
+    - main [ref=e14]:
+      - region "Lobby de Configuração" [ref=e15]:
+        - heading "Lobby de Configuração" [level=2] [ref=e16]
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - generic [ref=e19]:
+              - generic [ref=e20]: Nome da Jogadora
+              - textbox "Nome da Jogadora" [ref=e21]:
+                - /placeholder: Nome da jogadora...
+            - button "Invocar no círculo" [ref=e22] [cursor=pointer]: +
+          - generic [ref=e23]:
+            - generic [ref=e24]: Temperamento
+            - generic [ref=e25]:
+              - generic [ref=e26] [cursor=pointer]:
+                - radio "Labrador" [checked]
+                - generic [ref=e27]: Labrador
+              - generic [ref=e28] [cursor=pointer]:
+                - radio "Gato Preto"
+                - generic [ref=e29]: Gato Preto
+        - generic [ref=e30]:
+          - heading "O Círculo Invocado" [level=3] [ref=e31]
+          - list "Jogadoras invocadas" [ref=e32]:
+            - listitem [ref=e33]:
+              - generic [ref=e35]: Sabrina
+              - generic "Labrador" [ref=e36]
+              - button "Remover Sabrina" [ref=e37] [cursor=pointer]: ×
+            - listitem [ref=e38]:
+              - generic [ref=e40]: Shai
+              - generic "Gato Preto" [ref=e41]
+              - button "Remover Shai" [ref=e42] [cursor=pointer]: ×
+            - listitem [ref=e43]:
+              - generic [ref=e45]: Andressa
+              - generic "Labrador" [ref=e46]
+              - button "Remover Andressa" [ref=e47] [cursor=pointer]: ×
+            - listitem [ref=e48]:
+              - generic [ref=e50]: Patrícia
+              - generic "Gato Preto" [ref=e51]
+              - button "Remover Patrícia" [ref=e52] [cursor=pointer]: ×
+            - listitem [ref=e53]:
+              - generic [ref=e55]: Ana
+              - generic "Gato Preto" [ref=e56]
+              - button "Remover Ana" [ref=e57] [cursor=pointer]: ×
+        - generic [ref=e58]:
+          - generic [ref=e59]: Modo de Jogo
+          - generic [ref=e60]:
+            - generic [ref=e61] [cursor=pointer]:
+              - radio "🍷 Sobrevivência Cálices de vida. Confessou, perde essência." [checked]
+              - generic [ref=e62]:
+                - generic [ref=e63]: 🍷 Sobrevivência
+                - generic [ref=e64]: Cálices de vida. Confessou, perde essência.
+            - generic [ref=e65] [cursor=pointer]:
+              - radio "🍻 Roda de Bar Sem eliminação. Arcanos ativam goles e minijogos."
+              - generic [ref=e66]:
+                - generic [ref=e67]: 🍻 Roda de Bar
+                - generic [ref=e68]: Sem eliminação. Arcanos ativam goles e minijogos.
+        - generic [ref=e69]:
+          - button "Forjar Arcano" [ref=e70] [cursor=pointer]
+          - button "Iniciar a Leitura" [ref=e71] [cursor=pointer]
+    - contentinfo [ref=e72]:
+      - paragraph [ref=e73]: Criado para rodas de fofocas e revelações místicas.
