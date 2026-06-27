@@ -400,6 +400,22 @@ body::before {
     background-color: rgba(0, 0, 0, 0.15);
 }
 
+.game-mode-selector-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 1.2rem;
+    margin-bottom: 1.2rem;
+    padding: 0.6rem;
+    border: 1px solid rgba(219, 180, 97, 0.15);
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.game-mode-options {
+    display: flex;
+    gap: 0.8rem;
+}
+
 .selector-label {
     font-family: var(--font-heading);
     font-size: 0.8rem;
@@ -1061,7 +1077,8 @@ body::before {
     z-index: -1;
 }
 
-dialog#custom-card-dialog {
+dialog#custom-card-dialog,
+dialog#grimoire-dialog {
     border: 3px double var(--color-gold-dark);
     background-color: var(--color-paper);
     color: var(--color-ink);
@@ -1079,17 +1096,20 @@ dialog#custom-card-dialog {
     transform: translate(-50%, -50%);
 }
 
-dialog#custom-card-dialog[open] {
+dialog#custom-card-dialog[open],
+dialog#grimoire-dialog[open] {
     display: flex;
     flex-direction: column;
 }
 
-dialog#custom-card-dialog::backdrop {
+dialog#custom-card-dialog::backdrop,
+dialog#grimoire-dialog::backdrop {
     background-color: rgba(8, 6, 12, 0.88);
     backdrop-filter: blur(5px);
 }
 
-dialog#custom-card-dialog .section-title {
+dialog#custom-card-dialog .section-title,
+dialog#grimoire-dialog .section-title {
     color: var(--color-ink);
     border-bottom: 2px solid var(--color-gold-dark);
     margin-bottom: 1.2rem;
@@ -1459,5 +1479,258 @@ body.theme-cosmic .score-item.arch-gato-preto {
 .score-item.active-turn.arch-gato-preto {
     box-shadow: inset 4px 0 0 var(--color-crimson), 0 0 10px rgba(166, 36, 36, 0.15);
 }
+
+/* Active Rules Panel */
+.active-rules-container {
+    width: 100%;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--color-gold-dark);
+    background-color: rgba(0, 0, 0, 0.4);
+    filter: url(#woodcut-roughness);
+    transition: all var(--transition-normal);
+}
+
+.active-rules-container.hidden {
+    display: none !important;
+}
+
+.rules-header {
+    background-color: rgba(219, 180, 97, 0.1);
+    border-bottom: 1px solid var(--color-gold-dark);
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-gold);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 0.4rem;
+    text-align: center;
+}
+
+.rules-body {
+    padding: 0.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+}
+
+.rule-badge {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(219, 180, 97, 0.3);
+    border-radius: 4px;
+    padding: 0.3rem 0.6rem;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    color: var(--color-paper);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.rule-badge strong {
+    color: var(--color-gold);
+}
+
+/* Calice Sagrado (Copo do Rei) */
+.calice-sagrado-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px double var(--color-gold);
+    background-color: rgba(20, 10, 10, 0.7);
+    padding: 0.8rem;
+    margin-bottom: 1.2rem;
+    filter: url(#woodcut-roughness);
+    animation: glowGoldPulse 3s infinite ease-in-out;
+}
+
+@keyframes glowGoldPulse {
+    0% { box-shadow: 0 0 5px rgba(219, 180, 97, 0.1); }
+    50% { box-shadow: 0 0 15px rgba(219, 180, 97, 0.3); }
+    100% { box-shadow: 0 0 5px rgba(219, 180, 97, 0.1); }
+}
+
+.calice-sagrado-box.hidden {
+    display: none !important;
+}
+
+.calice-label {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-gold);
+}
+
+.calice-value {
+    font-family: var(--font-heading-fancy);
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--color-paper);
+    margin: 0.2rem 0;
+}
+
+.calice-liquid-bar-wrapper {
+    width: 80%;
+    height: 12px;
+    border: 1px solid var(--color-gold-dark);
+    background-color: rgba(0, 0, 0, 0.5);
+    margin-top: 0.4rem;
+    overflow: hidden;
+}
+
+.calice-liquid-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-crimson), var(--color-crimson-dark));
+    box-shadow: 0 0 8px rgba(166, 36, 36, 0.8);
+    transition: width 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* Mystic Mini-game Widget Box */
+.mystic-minigame-box {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid var(--color-gold-dark);
+    background-color: rgba(20, 15, 10, 0.6);
+    filter: url(#woodcut-roughness);
+}
+
+.mystic-minigame-box.hidden {
+    display: none !important;
+}
+
+.minigame-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.minigame-instruction {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--color-paper);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.minigame-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.minigame-input {
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-gold-dark);
+    color: var(--color-paper);
+    padding: 0.6rem;
+    font-family: 'Almendra', Georgia, serif;
+    font-size: 1rem;
+    text-align: center;
+    outline: none;
+}
+
+.minigame-input:focus {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 5px rgba(219, 180, 97, 0.3);
+}
+
+.minigame-grid-select {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.6rem;
+    margin-top: 0.8rem;
+}
+
+.minigame-select-btn {
+    border: 1px solid var(--color-gold-dark);
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--color-paper);
+    padding: 0.5rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    filter: url(#woodcut-roughness);
+}
+
+.minigame-select-btn.selected {
+    background-color: var(--color-crimson);
+    color: var(--color-paper);
+    border-color: var(--color-crimson);
+    box-shadow: 0 0 8px rgba(166, 36, 36, 0.5);
+}
+
+.minigame-select-btn:hover {
+    border-color: var(--color-gold);
+}
+
+/* Grimoire List & Items */
+.grimoire-list {
+    max-height: 280px;
+    overflow-y: auto;
+    margin: 0.5rem 0;
+    padding-right: 0.5rem;
+}
+
+.grimoire-list::-webkit-scrollbar {
+    width: 6px;
+}
+.grimoire-list::-webkit-scrollbar-track {
+    background: var(--color-paper-dark);
+}
+.grimoire-list::-webkit-scrollbar-thumb {
+    background: var(--color-gold-dark);
+    border-radius: 3px;
+}
+
+.grimoire-item {
+    border-bottom: 1px dashed var(--color-gold-dark);
+    padding: 0.8rem 0;
+    font-size: 1.05rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.grimoire-item:last-child {
+    border-bottom: none;
+}
+
+.grimoire-item-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-heading);
+    font-weight: bold;
+    color: var(--color-crimson);
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.grimoire-item-text {
+    font-style: italic;
+    opacity: 0.9;
+    margin-bottom: 0.4rem;
+}
+
+.grimoire-item-confessed {
+    font-size: 0.95rem;
+    color: var(--color-ink);
+}
+
+.grimoire-item-confessed strong {
+    color: var(--color-crimson);
+}
+
+
 
 

@@ -21,7 +21,10 @@
         </select>
     </div>
     <canvas id="mystic-particles"></canvas>
-    <div class="sound-control-wrapper">
+    <div class="sound-control-wrapper" style="display: flex; gap: 0.5rem;">
+        <button id="btn-open-grimoire" class="btn-icon" aria-label="Abrir grimório" title="Abrir grimório dos pecados">
+            <span class="grimoire-icon">📖</span>
+        </button>
         <button id="btn-toggle-sound" class="btn-icon" aria-label="Alternar som" title="Alternar som místico">
             <span class="sound-icon">🔔</span>
         </button>
@@ -35,6 +38,14 @@
             <h1 class="mystic-title">O Tarô de Maluca</h1>
             <p class="mystic-subtitle">Revele seus pecados e sele seu destino</p>
         </header>
+
+        <!-- Active Rules & Special Roles Panel (visible during gameplay) -->
+        <div id="active-rules-panel" class="active-rules-container hidden">
+            <div class="rules-header">📜 Influências Místicas</div>
+            <div id="rules-list" class="rules-body">
+                <!-- Dynamic rules will go here -->
+            </div>
+        </div>
 
         <!-- Main Screen Views -->
         <main class="screens-container">
@@ -81,6 +92,21 @@
                     </ul>
                 </div>
 
+                <!-- Game Mode Selector -->
+                <div class="game-mode-selector-section">
+                    <span class="selector-label">Modo de Jogo:</span>
+                    <div class="game-mode-options">
+                        <label class="radio-label">
+                            <input type="radio" name="game-mode" value="survival" checked>
+                            <span class="custom-radio">🍷 Sobrevivência (Vidas)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="game-mode" value="sueca">
+                            <span class="custom-radio">🍻 Roda de Bar (Goles)</span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="lobby-actions" style="display: flex; gap: 0.8rem; width: 100%;">
                     <button type="button" id="btn-open-forge" class="btn-mystic btn-large" style="flex-grow: 1; margin-top: 1rem; background-color: transparent; color: var(--color-gold); border-color: var(--color-gold-dark);">Forjar Arcano</button>
                     <button id="btn-start-game" class="btn-mystic btn-large disabled" style="flex-grow: 2; margin-top: 1rem;" disabled>Iniciar a Leitura</button>
@@ -95,6 +121,15 @@
                 <div class="turn-announcement">
                     <p class="turn-subtitle">O Destino chama por...</p>
                     <h3 id="active-player-name" class="active-player-title">Carregando...</h3>
+                </div>
+
+                <!-- Cálice Sagrado display (visible in Sueca mode) -->
+                <div id="calice-sagrado-container" class="calice-sagrado-box hidden">
+                    <span class="calice-label">🍷 Cálice Sagrado:</span>
+                    <span id="calice-sagrado-count" class="calice-value">0 Goles</span>
+                    <div class="calice-liquid-bar-wrapper">
+                        <div id="calice-liquid-fill" class="calice-liquid-fill" style="width: 0%;"></div>
+                    </div>
                 </div>
 
                 <!-- Card Deck Area -->
@@ -118,7 +153,7 @@
 
                 <!-- Floating/Drawer Scoreboard for Game Session -->
                 <div class="game-scoreboard">
-                    <h4 class="scoreboard-title">Cálices de Essência</h4>
+                    <h4 id="scoreboard-title-text" class="scoreboard-title">Cálices de Essência</h4>
                     <div id="scoreboard-players" class="scoreboard-grid">
                         <!-- Dynamic scores -->
                     </div>
@@ -166,8 +201,11 @@
                 <!-- Confession Section -->
                 <div class="confession-panel">
                     <h3 class="confession-title">Quem confessa o pecado?</h3>
-                    <p class="confession-subtitle">Marque as jogadoras que já fizeram isso (perderão 1 cálice):</p>
+                    <p id="confession-subtitle-text" class="confession-subtitle">Marque as jogadoras que já fizeram isso (perderão 1 cálice):</p>
                     
+                    <!-- Special Mini-Game / Action widget -->
+                    <div id="mystic-minigame-container" class="mystic-minigame-box hidden"></div>
+
                     <div id="confession-players-list" class="confession-grid">
                         <!-- JavaScript will generate player checkboxes/toggles -->
                     </div>
@@ -275,6 +313,17 @@
                     <button type="submit" class="btn-mystic" style="flex: 1;">Selar Pacto</button>
                 </div>
             </form>
+        </div>
+    <!-- Dialog for Grimório dos Pecados -->
+    <dialog id="grimoire-dialog" closedby="any" aria-labelledby="grimoire-heading">
+        <div class="dialog-inner">
+            <h3 id="grimoire-heading" class="section-title">O Grimório dos Pecados</h3>
+            <div id="grimoire-history-content" class="grimoire-list">
+                <p class="empty-list-msg">Nenhum arcano foi revelado nesta sessão ainda...</p>
+            </div>
+            <div class="dialog-actions" style="margin-top: 1.5rem;">
+                <button type="button" id="btn-close-grimoire" class="btn-mystic" style="width: 100%;">Fechar</button>
+            </div>
         </div>
     </dialog>
 

@@ -54,6 +54,15 @@ let currentCard = null;
 let confessedPlayers = new Set(); // holds indexes of players who confessed for current card
 let currentTheme = 'gold';
 
+// Game Mode & Special States
+let gameMode = 'survival'; // 'survival' or 'sueca'
+let activeRules = [];      // Custom rules created during the game
+let questionMasterIndex = -1;
+let toiletPassIndex = -1;
+let partnerships = {};     // Map of index -> index for Os Enamorados
+let caliceSagradoCount = 0;
+let totalRotasDrawn = 0;
+
 // DOM Elements
 const screenLobby = document.getElementById("screen-lobby");
 const screenGameplay = document.getElementById("screen-gameplay");
@@ -88,7 +97,31 @@ const btnCloseDialog = document.getElementById("btn-close-dialog");
 const inputCustomTitle = document.getElementById("custom-card-title");
 const inputCustomText = document.getElementById("custom-card-text");
 
+const activeRulesPanel = document.getElementById("active-rules-panel");
+const rulesList = document.getElementById("rules-list");
+const caliceSagradoContainer = document.getElementById("calice-sagrado-container");
+const caliceSagradoCountText = document.getElementById("calice-sagrado-count");
+const caliceLiquidFill = document.getElementById("calice-liquid-fill");
+const minigameContainer = document.getElementById("mystic-minigame-container");
+const scoreboardTitleText = document.getElementById("scoreboard-title-text");
+
 let customCards = [];
+try {
+    const saved = localStorage.getItem("tarot_custom_cards");
+    if (saved) {
+        customCards = JSON.parse(saved);
+    }
+} catch (e) {
+    customCards = [];
+}
+let gameHistory = []; // Tracks confessions history
+let heartbeatInterval = null; // Tracks tension heartbeat interval
+
+// Grimório DOM Elements
+const btnOpenGrimoire = document.getElementById("btn-open-grimoire");
+const grimoireDialog = document.getElementById("grimoire-dialog");
+const btnCloseGrimoire = document.getElementById("btn-close-grimoire");
+const grimoireHistoryContent = document.getElementById("grimoire-history-content");
 
 // ==========================================================================
 // SOUND SYNTHESIZER (Web Audio API)
@@ -250,6 +283,83 @@ function updateAmbientDroneFrequency() {
         ambientDroneNode2.frequency.exponentialRampToValueAtTime(55.4, t + 2.0);
         ambientGainNode.gain.linearRampToValueAtTime(0.04, t + 2.0);
     }
+}
+
+function startHeartbeat(livesCount) {
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    if (!soundEnabled || !audioCtx) return;
+
+    const intervalTime = livesCount === 1 ? 600 : 1000; 
+
+    heartbeatInterval = setInterval(() => {
+        if (!soundEnabled || !audioCtx) return;
+        if (audioCtx.state === 'suspended') return;
+        const t = audioCtx.currentTime;
+        triggerHeartbeatNode(t);
+        triggerHeartbeatNode(t + 0.18);
+    }, intervalTime);
+}
+
+function stopHeartbeat() {
+    if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+    }
+}
+
+function triggerHeartbeatNode(time) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(45, time); // Deep bass frequency
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(80, time);
+
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(0.3, time + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(time);
+    osc.stop(time + 0.2);
+}
+
+function playGlassShatter() {
+    if (!soundEnabled || !audioCtx) return;
+    const t = audioCtx.currentTime;
+
+    const bufferSize = audioCtx.sampleRate * 0.3; // 0.3s duration
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(8000, t); // High pitch shatter
+    filter.Q.setValueAtTime(5, t);
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.12, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    noise.start(t);
+    noise.stop(t + 0.3);
 }
 
 function playSound(type) {
@@ -420,12 +530,34 @@ function switchScreen(toScreen) {
 // ==========================================================================
 
 function setupNewGame() {
-    players = players.map(p => ({ ...p, lives: MAX_LIVES }));
+    const selectedMode = document.querySelector('input[name="game-mode"]:checked');
+    gameMode = selectedMode ? selectedMode.value : 'survival';
+
+    if (gameMode === 'sueca') {
+        players = players.map(p => ({ ...p, lives: 0 })); // in sueca, we track sips taken
+        scoreboardTitleText.textContent = "Goles Consumidos";
+    } else {
+        players = players.map(p => ({ ...p, lives: MAX_LIVES }));
+        scoreboardTitleText.textContent = "Cálices de Essência";
+    }
+
     cardDeck = shuffle([...ALL_CARDS, ...customCards]);
     activePlayerIndex = 0;
     currentCard = null;
     confessedPlayers.clear();
-    
+    gameHistory = []; // Reset confessions history
+    stopHeartbeat();  // Stop any active heartbeat
+
+    // Reset Sueca states
+    activeRules = [];
+    questionMasterIndex = -1;
+    toiletPassIndex = -1;
+    partnerships = {};
+    caliceSagradoCount = 0;
+    totalRotasDrawn = 0;
+
+    renderActiveRules();
+    updateCaliceSagradoDisplay();
     updateScoreboard();
     prepareNextTurn();
     switchScreen(screenGameplay);
@@ -442,11 +574,18 @@ function shuffle(array) {
 function prepareNextTurn() {
     if (players.length === 0) return;
     
-    // Check if any player has died
-    const deadPlayers = players.filter(p => p.lives <= 0);
-    if (deadPlayers.length > 0 || cardDeck.length === 0) {
-        endGame();
-        return;
+    // Check if game over condition is met
+    if (gameMode === 'survival') {
+        const deadPlayers = players.filter(p => p.lives <= 0);
+        if (deadPlayers.length > 0 || cardDeck.length === 0) {
+            endGame();
+            return;
+        }
+    } else { // sueca mode ends when deck is empty
+        if (cardDeck.length === 0) {
+            endGame();
+            return;
+        }
     }
 
     const activePlayer = players[activePlayerIndex];
@@ -456,11 +595,294 @@ function prepareNextTurn() {
     updateScoreboard();
 }
 
+function setupMiniGameForCard(card) {
+    if (!minigameContainer) return;
+    minigameContainer.innerHTML = '';
+    minigameContainer.classList.add("hidden");
+
+    // Default confession subtitle text
+    const subtitleText = document.getElementById("confession-subtitle-text");
+    if (subtitleText) {
+        if (gameMode === 'sueca') {
+            subtitleText.textContent = "Marque as jogadoras que devem beber (goles acumulados):";
+        } else {
+            subtitleText.textContent = "Marque as jogadoras que já fizeram isso (perderão 1 cálice):";
+        }
+    }
+
+    if (gameMode !== 'sueca') {
+        return;
+    }
+
+    minigameContainer.classList.remove("hidden");
+
+    switch(card.id) {
+        case 0: // O Louco
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">📜 A Regra da Louca</div>
+                <div class="minigame-instruction">A jogadora atual (${players[activePlayerIndex].name}) deve criar uma regra personalizada para a mesa! Quem quebrar, bebe 1 gole. Digite a regra abaixo:</div>
+                <div class="minigame-input-group">
+                    <input type="text" id="input-louco-rule" class="minigame-input" placeholder="Ex: Proibido apontar o dedo" maxlength="40">
+                    <button type="button" id="btn-save-louco-rule" class="btn-mystic" style="margin-top: 0.5rem; width: 100%;">Decretar Regra</button>
+                </div>
+            `;
+            setTimeout(() => {
+                const btn = document.getElementById("btn-save-louco-rule");
+                const input = document.getElementById("input-louco-rule");
+                if (btn && input) {
+                    btn.addEventListener("click", () => {
+                        const ruleText = input.value.trim();
+                        if (ruleText) {
+                            activeRules.push(`${players[activePlayerIndex].name}: "${ruleText}"`);
+                            renderActiveRules();
+                            playSound('confess');
+                            minigameContainer.innerHTML = `<div class="minigame-instruction" style="color: var(--color-gold); font-weight: bold; text-align: center;">Regra decretada: "${ruleText}"!</div>`;
+                        }
+                    });
+                }
+            }, 100);
+            break;
+
+        case 1: // O Mago
+            questionMasterIndex = activePlayerIndex;
+            renderActiveRules();
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">🧙‍♂️ Mestre da Pergunta</div>
+                <div class="minigame-instruction"><strong>${players[activePlayerIndex].name}</strong> agora é o Mestre da Pergunta! Ninguém pode responder às suas perguntas. Quem responder bebe 1 gole!</div>
+            `;
+            break;
+
+        case 2: // A Sacerdotisa
+            toiletPassIndex = activePlayerIndex;
+            renderActiveRules();
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">🗝️ Chave do Banheiro</div>
+                <div class="minigame-instruction"><strong>${players[activePlayerIndex].name}</strong> ganhou a Chave do Banheiro! Ninguém pode ir ao banheiro sem permissão, ou beberá 3 goles!</div>
+            `;
+            break;
+
+        case 5: // O Hierofante
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">🔢 O Jogo do Pi</div>
+                <div class="minigame-instruction">Sentido horário: contem a partir de ${players[activePlayerIndex].name}. Números com 7 ou múltiplos de 7 dizem "Pi!". Quem errar bebe 2 goles! Marque o perdedor abaixo.</div>
+            `;
+            break;
+
+        case 6: // Os Enamorados
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">🔗 Pacto do Gole</div>
+                <div class="minigame-instruction">A jogadora atual (${players[activePlayerIndex].name}) deve escolher uma parceira. Toda vez que uma beber, a outra bebe 1 gole junto! Escolha abaixo:</div>
+                <div class="minigame-grid-select" id="enamorados-select"></div>
+            `;
+            setTimeout(() => {
+                const container = document.getElementById("enamorados-select");
+                if (container) {
+                    players.forEach((p, idx) => {
+                        if (idx !== activePlayerIndex) {
+                            const btn = document.createElement("button");
+                            btn.className = "minigame-select-btn";
+                            btn.textContent = `${p.icon} ${p.name}`;
+                            btn.addEventListener("click", () => {
+                                partnerships[activePlayerIndex] = idx;
+                                partnerships[idx] = activePlayerIndex;
+                                renderActiveRules();
+                                playSound('confess');
+                                container.innerHTML = `<div class="minigame-instruction" style="color: var(--color-gold); text-align: center; width: 100%;">Pacto selado entre <strong>${players[activePlayerIndex].name}</strong> e <strong>${p.name}</strong>!</div>`;
+                            });
+                            container.appendChild(btn);
+                        }
+                    });
+                }
+            }, 100);
+            break;
+
+        case 7: // O Carro
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">🚗 Jogo das Categorias</div>
+                <div class="minigame-instruction">A jogadora atual (${players[activePlayerIndex].name}) escolhe uma categoria. Em sentido horário, falem itens dela. O primeiro que falhar/repetir bebe 2 goles!</div>
+            `;
+            break;
+
+        case 8: // A Força
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">⚡ Desafio do Dedo</div>
+                <div class="minigame-instruction">Coloquem o dedo na mesa física IMEDIATAMENTE! O grupo deve decidir quem foi a última. Selecione-a abaixo para confessar (beberá 2 goles):</div>
+                <div class="minigame-grid-select" id="finger-select"></div>
+            `;
+            setTimeout(() => {
+                const container = document.getElementById("finger-select");
+                if (container) {
+                    players.forEach((p, idx) => {
+                        const btn = document.createElement("button");
+                        btn.className = "minigame-select-btn";
+                        btn.textContent = `${p.icon} ${p.name}`;
+                        btn.addEventListener("click", () => {
+                            container.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
+                            btn.classList.add("selected");
+                            confessedPlayers.clear();
+                            confessedPlayers.add(idx);
+                            
+                            const mainBtns = listConfessionPlayers.querySelectorAll(".confession-btn");
+                            mainBtns.forEach(mb => {
+                                const pIdx = parseInt(mb.getAttribute("data-player-index"));
+                                if (pIdx === idx) {
+                                    mb.classList.add("confessed");
+                                } else {
+                                    mb.classList.remove("confessed");
+                                }
+                            });
+                        });
+                        container.appendChild(btn);
+                    });
+                }
+            }, 100);
+            break;
+
+        case 9: // O Eremita
+            activeRules.push("Voto de Silêncio (Eremita)");
+            renderActiveRules();
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">🤫 Voto de Silêncio</div>
+                <div class="minigame-instruction">Ninguém pode falar nada até a próxima carta! Quem quebrar o silêncio bebe 1 gole.</div>
+            `;
+            break;
+
+        case 10: // A Roda da Fortuna
+            caliceSagradoCount += 2;
+            updateCaliceSagradoDisplay();
+            totalRotasDrawn += 1;
+            
+            let rodaHtml = '';
+            if (totalRotasDrawn >= 4) {
+                rodaHtml = `<div class="minigame-instruction" style="color: var(--color-crimson); font-weight: bold; animation: pulseGold 1s infinite; text-align: center;">4ª RODA DA FORTUNA! A jogadora atual (${players[activePlayerIndex].name}) deve beber o CÁLICE SAGRADO INTEIRO (${caliceSagradoCount} goles)!</div>`;
+                players[activePlayerIndex].lives += caliceSagradoCount;
+                caliceSagradoCount = 0;
+                setTimeout(() => {
+                    updateCaliceSagradoDisplay();
+                    updateScoreboard();
+                }, 1500);
+            } else {
+                rodaHtml = `<div class="minigame-instruction">A Roda girou! +2 Goles adicionados ao Cálice Sagrado central (Total: ${caliceSagradoCount} goles). Quem confessar bebe, quem não confessar está livre.</div>`;
+            }
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">🎡 O Cálice Sagrado</div>
+                ${rodaHtml}
+            `;
+            break;
+
+        case 13: // A Morte
+            let minSips = Math.min(...players.map(p => p.lives));
+            let soberestPlayers = players.map((p, idx) => ({p, idx})).filter(item => item.p.lives === minSips);
+            let carrasco = soberestPlayers[Math.floor(Math.random() * soberestPlayers.length)];
+            
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">💀 Carrasco da Morte</div>
+                <div class="minigame-instruction">A jogadora mais sóbria (${carrasco.p.name}) deve apontar para alguém e condená-la a beber 3 goles! Selecione a vítima abaixo:</div>
+                <div class="minigame-grid-select" id="morte-select"></div>
+            `;
+            setTimeout(() => {
+                const container = document.getElementById("morte-select");
+                if (container) {
+                    players.forEach((p, idx) => {
+                        const btn = document.createElement("button");
+                        btn.className = "minigame-select-btn";
+                        btn.textContent = `${p.icon} ${p.name}`;
+                        btn.addEventListener("click", () => {
+                            container.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
+                            btn.classList.add("selected");
+                            confessedPlayers.clear();
+                            confessedPlayers.add(idx);
+                            
+                            const mainBtns = listConfessionPlayers.querySelectorAll(".confession-btn");
+                            mainBtns.forEach(mb => {
+                                const pIdx = parseInt(mb.getAttribute("data-player-index"));
+                                if (pIdx === idx) {
+                                    mb.classList.add("confessed");
+                                } else {
+                                    mb.classList.remove("confessed");
+                                }
+                            });
+                        });
+                        container.appendChild(btn);
+                    });
+                }
+            }, 100);
+            break;
+
+        case 15: // O Diabo
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">😈 Verdade ou Consequência</div>
+                <div class="minigame-instruction">A jogadora atual (${players[activePlayerIndex].name}) deve confessar uma fofoca/segredo ("Verdade") ou confessar a carta e beber 3 goles!</div>
+                <div class="minigame-grid-select" id="diabo-select">
+                    <button type="button" class="minigame-select-btn" id="btn-diabo-verdade">📝 Verdade (Livre)</button>
+                    <button type="button" class="minigame-select-btn" id="btn-diabo-consequencia">🍷 Beber 3 Goles</button>
+                </div>
+            `;
+            setTimeout(() => {
+                const btnVerdade = document.getElementById("btn-diabo-verdade");
+                const btnConsequencia = document.getElementById("btn-diabo-consequencia");
+                if (btnVerdade && btnConsequencia) {
+                    btnVerdade.addEventListener("click", () => {
+                        btnVerdade.classList.add("selected");
+                        btnConsequencia.classList.remove("selected");
+                        confessedPlayers.clear();
+                        listConfessionPlayers.querySelectorAll(".confession-btn").forEach(mb => mb.classList.remove("confessed"));
+                    });
+                    btnConsequencia.addEventListener("click", () => {
+                        btnConsequencia.classList.add("selected");
+                        btnVerdade.classList.remove("selected");
+                        confessedPlayers.clear();
+                        confessedPlayers.add(activePlayerIndex);
+                        listConfessionPlayers.querySelectorAll(".confession-btn").forEach(mb => {
+                            const pIdx = parseInt(mb.getAttribute("data-player-index"));
+                            if (pIdx === activePlayerIndex) {
+                                mb.classList.add("confessed");
+                            } else {
+                                mb.classList.remove("confessed");
+                            }
+                        });
+                    });
+                }
+            }, 100);
+            break;
+
+        case 16: // A Torre
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">💥 A Cascata da Torre</div>
+                <div class="minigame-instruction">A jogadora atual (${players[activePlayerIndex].name}) começa a beber. A da sua direita começa a seguir, e assim por diante. Todos bebem 2 goles!</div>
+            `;
+            setTimeout(() => {
+                players.forEach((p, idx) => {
+                    confessedPlayers.add(idx);
+                });
+                listConfessionPlayers.querySelectorAll(".confession-btn").forEach(mb => mb.classList.add("confessed"));
+            }, 100);
+            break;
+
+        case 17: // A Estrela
+            minigameContainer.innerHTML = `
+                <div class="minigame-title">⭐ Brinde Coletivo</div>
+                <div class="minigame-instruction">Um brinde celestial! Todos da mesa confessam a carta e bebem 1 gole juntos! Cheers! 🍻</div>
+            `;
+            setTimeout(() => {
+                players.forEach((p, idx) => {
+                    confessedPlayers.add(idx);
+                });
+                listConfessionPlayers.querySelectorAll(".confession-btn").forEach(mb => mb.classList.add("confessed"));
+            }, 100);
+            break;
+    }
+}
+
 function drawCard() {
     if (cardDeck.length === 0) {
         endGame();
         return;
     }
+
+    // Clean round-specific temporary rules
+    activeRules = activeRules.filter(r => !r.includes("Voto de Silêncio"));
+    renderActiveRules();
 
     playSound('draw');
     currentCard = cardDeck.pop();
@@ -503,12 +925,13 @@ function drawCard() {
 
     // Set up confession checklist
     listConfessionPlayers.innerHTML = '';
+    const confessionMark = gameMode === 'sueca' ? '🍺' : '🍷';
     players.forEach((player, idx) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "confession-btn";
         btn.setAttribute("data-player-index", idx);
-        btn.innerHTML = `<span class="player-icon">${player.icon}</span> ${player.name} <span class="confession-mark">🍷</span>`;
+        btn.innerHTML = `<span class="player-icon">${player.icon}</span> ${player.name} <span class="confession-mark">${confessionMark}</span>`;
         
         btn.addEventListener("click", () => {
             playSound('click');
@@ -523,6 +946,9 @@ function drawCard() {
         listConfessionPlayers.appendChild(btn);
     });
 
+    // Setup the mini-game widget if sueca mode is active
+    setupMiniGameForCard(currentCard);
+
     // Reset 3D card layout rotation
     cardFlip3d.classList.remove("flipped");
 
@@ -532,91 +958,139 @@ function drawCard() {
     setTimeout(() => {
         playSound('flip');
         cardFlip3d.classList.add("flipped");
+        triggerBurst(window.innerWidth / 2, window.innerHeight / 2);
     }, 450);
 }
 
 function submitConfession() {
     playSound('click');
 
-    // Apply lives deduction or specials
     const totalConfessed = confessedPlayers.size;
     const majorityThreshold = players.length / 2;
-    const minLives = Math.min(...players.map(p => p.lives));
+    const minLivesBefore = Math.min(...players.map(p => p.lives));
+    
+    // Save lives before update to check for damage (survival mode)
+    const livesBefore = players.map(p => p.lives);
 
-    players.forEach((player, idx) => {
-        if (currentCard.id === 10) { // Roda da Fortuna special
+    if (gameMode === 'sueca') {
+        const additionalDrinkers = new Set();
+        players.forEach((player, idx) => {
             if (confessedPlayers.has(idx)) {
-                player.lives = Math.min(MAX_LIVES, player.lives + 1);
-            } else {
-                player.lives = Math.max(0, player.lives - 1);
-            }
-        } else if (currentCard.id === 6) { // Os Enamorados special
-            if (totalConfessed === 2) {
-                // Protected!
-            } else {
-                if (confessedPlayers.has(idx)) {
-                    player.lives = Math.max(0, player.lives - 1);
+                let sips = 1;
+                if ([5, 7, 8, 16].includes(currentCard.id)) {
+                    sips = 2;
+                } else if ([13, 15].includes(currentCard.id)) {
+                    sips = 3;
+                }
+                player.lives += sips;
+
+                // Os Enamorados partnership check
+                if (partnerships[idx] !== undefined) {
+                    additionalDrinkers.add(partnerships[idx]);
                 }
             }
-        } else if (currentCard.id === 11) { // A Força special
-            if (totalConfessed === 1) {
-                // Protected!
-            } else {
-                if (confessedPlayers.has(idx)) {
-                    player.lives = Math.max(0, player.lives - 1);
-                }
+        });
+
+        // Apply sips to partners
+        additionalDrinkers.forEach(partnerIdx => {
+            if (!confessedPlayers.has(partnerIdx)) {
+                players[partnerIdx].lives += 1;
             }
-        } else if (currentCard.id === 20) { // O Julgamento special
-            if (totalConfessed > majorityThreshold) {
-                // Protected!
-            } else {
+        });
+    } else {
+        // Survival Mode
+        players.forEach((player, idx) => {
+            if (currentCard.id === 10) { // Roda da Fortuna
                 if (confessedPlayers.has(idx)) {
-                    player.lives = Math.max(0, player.lives - 2);
-                }
-            }
-        } else if (currentCard.id === 9) { // O Eremita special
-            if (totalConfessed === players.length - 1 && !confessedPlayers.has(idx)) {
-                player.lives = Math.min(MAX_LIVES, player.lives + 1);
-            } else if (confessedPlayers.has(idx)) {
-                player.lives = Math.max(0, player.lives - 2);
-            }
-        } else if (currentCard.id === 12) { // O Enforcado special
-            if (totalConfessed === 1) {
-                if (confessedPlayers.has(idx)) {
-                    player.lives = Math.max(0, player.lives - 2);
-                } else {
                     player.lives = Math.min(MAX_LIVES, player.lives + 1);
+                } else {
+                    player.lives = Math.max(0, player.lives - 1);
                 }
-            } else {
+            } else if (currentCard.id === 6) { // Os Enamorados
+                if (totalConfessed === 2) {
+                    // Protected!
+                } else {
+                    if (confessedPlayers.has(idx)) {
+                        player.lives = Math.max(0, player.lives - 1);
+                    }
+                }
+            } else if (currentCard.id === 11) { // A Força
+                if (totalConfessed === 1) {
+                    // Protected!
+                } else {
+                    if (confessedPlayers.has(idx)) {
+                        player.lives = Math.max(0, player.lives - 1);
+                    }
+                }
+            } else if (currentCard.id === 20) { // O Julgamento
+                if (totalConfessed > majorityThreshold) {
+                    // Protected!
+                } else {
+                    if (confessedPlayers.has(idx)) {
+                        player.lives = Math.max(0, player.lives - 2);
+                    }
+                }
+            } else if (currentCard.id === 9) { // O Eremita
+                if (totalConfessed === players.length - 1 && !confessedPlayers.has(idx)) {
+                    player.lives = Math.min(MAX_LIVES, player.lives + 1);
+                } else if (confessedPlayers.has(idx)) {
+                    player.lives = Math.max(0, player.lives - 2);
+                }
+            } else if (currentCard.id === 12) { // O Enforcado
+                if (totalConfessed === 1) {
+                    if (confessedPlayers.has(idx)) {
+                        player.lives = Math.max(0, player.lives - 2);
+                    } else {
+                        player.lives = Math.min(MAX_LIVES, player.lives + 1);
+                    }
+                } else {
+                    if (confessedPlayers.has(idx)) {
+                        player.lives = Math.max(0, player.lives - 1);
+                    }
+                }
+            } else if (currentCard.id === 13) { // A Morte
+                if (player.lives === minLivesBefore) {
+                    // Protected!
+                } else {
+                    if (confessedPlayers.has(idx)) {
+                        player.lives = Math.max(0, player.lives - 1);
+                    }
+                }
+            } else if (currentCard.id === 17) { // A Estrela
+                if (totalConfessed === 0) {
+                    player.lives = Math.min(MAX_LIVES, player.lives + 1);
+                } else {
+                    if (confessedPlayers.has(idx)) {
+                        player.lives = Math.max(0, player.lives - 1);
+                    }
+                }
+            } else { // Standard card
                 if (confessedPlayers.has(idx)) {
                     player.lives = Math.max(0, player.lives - 1);
                 }
             }
-        } else if (currentCard.id === 13) { // A Morte special
-            if (player.lives === minLives) {
-                // Protected!
-            } else {
-                if (confessedPlayers.has(idx)) {
-                    player.lives = Math.max(0, player.lives - 1);
-                }
-            }
-        } else if (currentCard.id === 17) { // A Estrela special
-            if (totalConfessed === 0) {
-                player.lives = Math.min(MAX_LIVES, player.lives + 1);
-            } else {
-                if (confessedPlayers.has(idx)) {
-                    player.lives = Math.max(0, player.lives - 1);
-                }
-            }
-        } else { // Standard card
-            if (confessedPlayers.has(idx)) {
-                player.lives = Math.max(0, player.lives - 1);
-            }
-        }
+        });
+    }
+
+    // Record turn to game history
+    const confessedList = players.filter((_, i) => confessedPlayers.has(i));
+    gameHistory.push({
+        cardTitle: currentCard.title,
+        cardText: currentCard.text,
+        targetPlayer: players[activePlayerIndex].name,
+        confessed: confessedList.map(p => p.name)
     });
 
-    // Animate lives lost on scoreboard
+    // Update scoreboard
     updateScoreboard();
+
+    // Trigger visual explosion in the center of the screen
+    triggerBurst(window.innerWidth / 2, window.innerHeight / 2);
+
+    // Hide mini-game box on screen change
+    if (minigameContainer) {
+        minigameContainer.classList.add("hidden");
+    }
 
     // Sound effect if someone confessed or recovered life
     const recoveredLifeInStar = (currentCard.id === 17 && totalConfessed === 0);
@@ -625,19 +1099,107 @@ function submitConfession() {
         setTimeout(() => playSound('confess'), 300);
     }
 
+    // playGlassShatter and heartbeat checks for survival mode
+    if (gameMode === 'survival') {
+        const anyoneLostLife = players.some((p, idx) => p.lives < livesBefore[idx]);
+        if (anyoneLostLife) {
+            setTimeout(() => playGlassShatter(), 150);
+        }
+        
+        const minLivesAfter = Math.min(...players.map(p => p.lives));
+        if (minLivesAfter === 1) {
+            startHeartbeat(1);
+        } else {
+            stopHeartbeat();
+        }
+    }
+
     // Advance turn to next player
     activePlayerIndex = (activePlayerIndex + 1) % players.length;
 
     // Check game over condition or transition back to deck
     setTimeout(() => {
-        const deadPlayers = players.filter(p => p.lives <= 0);
-        if (deadPlayers.length > 0 || cardDeck.length === 0) {
-            endGame();
+        if (gameMode === 'survival') {
+            const deadPlayers = players.filter(p => p.lives <= 0);
+            if (deadPlayers.length > 0 || cardDeck.length === 0) {
+                endGame();
+            } else {
+                prepareNextTurn();
+                switchScreen(screenGameplay);
+            }
         } else {
-            prepareNextTurn();
-            switchScreen(screenGameplay);
+            // Sueca mode gameplay check
+            if (cardDeck.length === 0) {
+                endGame();
+            } else {
+                prepareNextTurn();
+                switchScreen(screenGameplay);
+            }
         }
     }, 800);
+}
+
+function renderActiveRules() {
+    if (!rulesList) return;
+    rulesList.innerHTML = '';
+    
+    let hasRules = false;
+
+    if (questionMasterIndex !== -1) {
+        hasRules = true;
+        const badge = document.createElement("span");
+        badge.className = "rule-badge";
+        badge.innerHTML = `🧙‍♂️ <strong>Mestre da Pergunta:</strong> ${players[questionMasterIndex].name}`;
+        rulesList.appendChild(badge);
+    }
+
+    if (toiletPassIndex !== -1) {
+        hasRules = true;
+        const badge = document.createElement("span");
+        badge.className = "rule-badge";
+        badge.innerHTML = `🗝️ <strong>Chave do Banheiro:</strong> ${players[toiletPassIndex].name}`;
+        rulesList.appendChild(badge);
+    }
+
+    // Render partnerships
+    Object.keys(partnerships).forEach(key => {
+        const p1 = parseInt(key);
+        const p2 = partnerships[key];
+        if (p1 < p2 && players[p1] && players[p2]) {
+            hasRules = true;
+            const badge = document.createElement("span");
+            badge.className = "rule-badge";
+            badge.innerHTML = `🔗 <strong>Pacto:</strong> ${players[p1].name} + ${players[p2].name}`;
+            rulesList.appendChild(badge);
+        }
+    });
+
+    activeRules.forEach(rule => {
+        hasRules = true;
+        const badge = document.createElement("span");
+        badge.className = "rule-badge";
+        badge.innerHTML = `📜 ${rule}`;
+        rulesList.appendChild(badge);
+    });
+
+    if (hasRules) {
+        activeRulesPanel.classList.remove("hidden");
+    } else {
+        activeRulesPanel.classList.add("hidden");
+    }
+}
+
+function updateCaliceSagradoDisplay() {
+    if (!caliceSagradoContainer) return;
+    if (gameMode !== 'sueca') {
+        caliceSagradoContainer.classList.add("hidden");
+        return;
+    }
+
+    caliceSagradoContainer.classList.remove("hidden");
+    caliceSagradoCountText.textContent = `${caliceSagradoCount} ${caliceSagradoCount === 1 ? 'Gole' : 'Goles'}`;
+    const percent = Math.min(100, (caliceSagradoCount / 12) * 100);
+    caliceLiquidFill.style.width = `${percent}%`;
 }
 
 function updateScoreboard() {
@@ -650,20 +1212,26 @@ function updateScoreboard() {
             item.classList.add("active-turn");
         }
 
-        // Chalices icons
-        let chalicesHtml = '';
-        for (let i = 1; i <= MAX_LIVES; i++) {
-            if (i <= player.lives) {
-                chalicesHtml += `<span class="chalice-icon">🍷</span>`;
-            } else {
-                chalicesHtml += `<span class="chalice-icon lost">🍷</span>`;
+        // Score display depending on gameMode
+        let scoreHtml = '';
+        if (gameMode === 'sueca') {
+            scoreHtml = `<span style="font-weight: 700; color: var(--color-gold); font-size: 1.1rem; margin-top: 0.3rem;">🍺 ${player.lives} ${player.lives === 1 ? 'Gole' : 'Goles'}</span>`;
+        } else {
+            let chalicesHtml = '';
+            for (let i = 1; i <= MAX_LIVES; i++) {
+                if (i <= player.lives) {
+                    chalicesHtml += `<span class="chalice-icon">🍷</span>`;
+                } else {
+                    chalicesHtml += `<span class="chalice-icon lost">🍷</span>`;
+                }
             }
+            scoreHtml = `<div class="score-lives">${chalicesHtml}</div>`;
         }
 
         const archIcon = player.archetype === 'labrador' ? '🐕' : '🐈';
         item.innerHTML = `
             <span class="score-name">${player.icon} ${player.name} <span class="archetype-icon" title="${player.archetype}">${archIcon}</span></span>
-            <div class="score-lives">${chalicesHtml}</div>
+            ${scoreHtml}
         `;
         scoreboardPlayers.appendChild(item);
     });
@@ -671,9 +1239,15 @@ function updateScoreboard() {
 
 function endGame() {
     playSound('gameover');
+    stopHeartbeat();
     
-    // Sort players by lives descending to show ranking
-    const rankedPlayers = [...players].sort((a, b) => b.lives - a.lives);
+    // Sort players depending on game mode
+    let rankedPlayers;
+    if (gameMode === 'sueca') {
+        rankedPlayers = [...players].sort((a, b) => a.lives - b.lives); // less sips is better
+    } else {
+        rankedPlayers = [...players].sort((a, b) => b.lives - a.lives); // more lives is better
+    }
 
     listGameoverRankings.innerHTML = '';
     
@@ -689,20 +1263,34 @@ function endGame() {
         const archLabel = player.archetype === 'labrador' ? 'Labrador' : 'Gato Preto';
         const archIcon = player.archetype === 'labrador' ? '🐕' : '🐈';
         
-        if (player.lives === maxRemainingLives && player.lives > 0) {
-            titleBadge = `<span class="ranking-title-badge pure">${archLabel} Celestial</span>`;
-        } else if (player.lives === 0 || player.lives === minRemainingLives) {
-            titleBadge = `<span class="ranking-title-badge doomed">${archLabel} Caótico</span>`;
+        if (gameMode === 'sueca') {
+            if (player.lives === minRemainingLives) {
+                titleBadge = `<span class="ranking-title-badge pure">${archLabel} Sóbria</span>`;
+            } else if (player.lives === maxRemainingLives) {
+                titleBadge = `<span class="ranking-title-badge doomed">${archLabel} Ébria</span>`;
+            } else {
+                titleBadge = `<span class="ranking-title-badge">${archLabel} Cúmplice</span>`;
+            }
         } else {
-            titleBadge = `<span class="ranking-title-badge">${archLabel} Cúmplice</span>`;
+            if (player.lives === maxRemainingLives && player.lives > 0) {
+                titleBadge = `<span class="ranking-title-badge pure">${archLabel} Celestial</span>`;
+            } else if (player.lives === 0 || player.lives === minRemainingLives) {
+                titleBadge = `<span class="ranking-title-badge doomed">${archLabel} Caótico</span>`;
+            } else {
+                titleBadge = `<span class="ranking-title-badge">${archLabel} Cúmplice</span>`;
+            }
         }
+
+        const scoreText = gameMode === 'sueca'
+            ? `${player.lives} ${player.lives === 1 ? 'Gole' : 'Goles'}`
+            : `${player.lives} / ${MAX_LIVES} Cálices`;
 
         item.innerHTML = `
             <div class="ranking-player-name">
                 <span>${rank + 1}. ${player.icon} ${player.name} <small style="opacity:0.75;">(${archIcon})</small></span>
                 ${titleBadge}
             </div>
-            <span class="ranking-lives-info">${player.lives} / ${MAX_LIVES} Cálices</span>
+            <span class="ranking-lives-info">${scoreText}</span>
         `;
         listGameoverRankings.appendChild(item);
     });
@@ -899,6 +1487,9 @@ if (formCustomCard) {
         };
         
         customCards.push(newCard);
+        try {
+            localStorage.setItem("tarot_custom_cards", JSON.stringify(customCards));
+        } catch (e) {}
         
         playSound('confess');
         
@@ -935,6 +1526,9 @@ class MysticParticle {
         } else if (currentTheme === 'classic') {
             this.color = '110, 80, 50'; // charcoal / sepia ash
             if (Math.random() < 0.1) this.color = '166, 36, 36'; // dark crimson ash
+            this.wobble = Math.random() * Math.PI * 2;
+            this.wobbleSpeed = Math.random() * 0.02 + 0.01;
+            this.wobbleAmount = Math.random() * 0.5 + 0.2;
         } else {
             this.color = this.isRune ? '219, 180, 97' : '217, 180, 97'; // gold
             if (Math.random() < 0.1) this.color = '166, 36, 36'; // crimson spark
@@ -945,6 +1539,11 @@ class MysticParticle {
         this.x += this.speedX;
         this.y += this.speedY;
         this.alpha -= this.decay;
+
+        if (currentTheme === 'classic') {
+            this.wobble += this.wobbleSpeed;
+            this.x += Math.sin(this.wobble) * this.wobbleAmount;
+        }
 
         if (mouseX !== undefined && mouseY !== undefined) {
             const dx = this.x - mouseX;
@@ -978,11 +1577,41 @@ class MysticParticle {
     }
 }
 
+class BurstParticle extends MysticParticle {
+    constructor(canvas, x, y) {
+        super(canvas);
+        this.x = x;
+        this.y = y;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 3 + 1.5;
+        this.speedX = Math.cos(angle) * speed;
+        this.speedY = Math.sin(angle) * speed;
+        this.decay = Math.random() * 0.02 + 0.015;
+        this.alpha = 1.0;
+        this.size = Math.random() * 3 + 1.5;
+    }
+
+    update(mouseX, mouseY) {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= this.decay;
+    }
+}
+
 let canvasParticles = null;
 let ctxParticles = null;
 let particles = [];
+let burstParticles = [];
 let mouseX = undefined;
 let mouseY = undefined;
+
+function triggerBurst(x, y) {
+    if (!canvasParticles) return;
+    const count = 25;
+    for (let i = 0; i < count; i++) {
+        burstParticles.push(new BurstParticle(canvasParticles, x, y));
+    }
+}
 
 function initParticles() {
     canvasParticles = document.getElementById("mystic-particles");
@@ -997,7 +1626,7 @@ function initParticles() {
     
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
-
+ 
     particles = [];
     const count = Math.min(60, Math.floor(window.innerWidth / 15));
     for (let i = 0; i < count; i++) {
@@ -1020,10 +1649,46 @@ function initParticles() {
 function animateParticles() {
     if (!ctxParticles) return;
     ctxParticles.clearRect(0, 0, canvasParticles.width, canvasParticles.height);
+    
+    // Draw connections/constellations for theme-cosmic first
+    if (currentTheme === 'cosmic') {
+        ctxParticles.save();
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 80) {
+                    const alpha = ((80 - dist) / 80) * (particles[i].alpha * particles[j].alpha) * 0.25;
+                    ctxParticles.strokeStyle = `rgba(186, 85, 211, ${alpha})`;
+                    ctxParticles.lineWidth = 0.5;
+                    ctxParticles.beginPath();
+                    ctxParticles.moveTo(particles[i].x, particles[i].y);
+                    ctxParticles.lineTo(particles[j].x, particles[j].y);
+                    ctxParticles.stroke();
+                }
+            }
+        }
+        ctxParticles.restore();
+    }
+
+    // Update and draw normal particles
     particles.forEach(p => {
         p.update(mouseX, mouseY);
         p.draw(ctxParticles);
     });
+
+    // Update and draw burst particles
+    for (let i = burstParticles.length - 1; i >= 0; i--) {
+        const bp = burstParticles[i];
+        bp.update(mouseX, mouseY);
+        if (bp.alpha <= 0) {
+            burstParticles.splice(i, 1);
+        } else {
+            bp.draw(ctxParticles);
+        }
+    }
+
     requestAnimationFrame(animateParticles);
 }
 
@@ -1055,5 +1720,73 @@ if (themeSelector) {
         
         updateAmbientDroneFrequency();
         updateScoreboard();
+    });
+}
+
+// ==========================================================================
+// GRIMÓRIO (HISTORY OF CONFESSIONS)
+// ==========================================================================
+
+if (btnOpenGrimoire) {
+    btnOpenGrimoire.addEventListener("click", () => {
+        playSound('click');
+        renderGrimoire();
+        grimoireDialog.showModal();
+    });
+}
+
+if (btnCloseGrimoire) {
+    btnCloseGrimoire.addEventListener("click", () => {
+        playSound('click');
+        grimoireDialog.close();
+    });
+}
+
+// Click outside to close for grimoire dialog
+if (grimoireDialog && !('closedBy' in HTMLDialogElement.prototype)) {
+    grimoireDialog.addEventListener('click', (event) => {
+        if (event.target !== grimoireDialog) return;
+        const rect = grimoireDialog.getBoundingClientRect();
+        const isDialogContent = (
+            rect.top <= event.clientY &&
+            event.clientY <= rect.top + rect.height &&
+            rect.left <= event.clientX &&
+            event.clientX <= rect.left + rect.width
+        );
+        if (isDialogContent) return;
+        grimoireDialog.close();
+    });
+}
+
+function renderGrimoire() {
+    if (!grimoireHistoryContent) return;
+    
+    if (gameHistory.length === 0) {
+        grimoireHistoryContent.innerHTML = `<p class="empty-list-msg" style="text-align:center; padding: 2rem 0; opacity: 0.7;">Nenhum arcano foi revelado nesta sessão ainda...</p>`;
+        return;
+    }
+    
+    grimoireHistoryContent.innerHTML = '';
+    
+    gameHistory.forEach(entry => {
+        const item = document.createElement("div");
+        item.className = "grimoire-item";
+        
+        let confessedText = '';
+        if (entry.confessed.length === 0) {
+            confessedText = "Ninguém confessou este pecado.";
+        } else {
+            confessedText = `Confessado por: <strong>${entry.confessed.join(", ")}</strong>`;
+        }
+        
+        item.innerHTML = `
+            <div class="grimoire-item-header">
+                <span>🔮 ${entry.cardTitle}</span>
+                <small style="opacity: 0.8; font-size: 0.8rem;">Tirada por: ${entry.targetPlayer}</small>
+            </div>
+            <p class="grimoire-item-text">"${entry.cardText}"</p>
+            <div class="grimoire-item-confessed">${confessedText}</div>
+        `;
+        grimoireHistoryContent.appendChild(item);
     });
 }
