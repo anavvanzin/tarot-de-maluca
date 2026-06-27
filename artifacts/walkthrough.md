@@ -1,52 +1,58 @@
-# Entrega: O Tarô de Maluca — Edição Eu Nunca & Sueca
+# Entrega: O Taro de Maluca — Sueca de Maluca
 
-O jogo web **O Tarô de Maluca** foi atualizado e agora conta com duas mecânicas sociais integradas: o estilo **Eu Nunca** e as dinâmicas de bebida de **Sueca (jogo de bar)**!
+O jogo web **O Taro de Maluca** agora funciona como uma rodada social de Sueca/iPuke: a mesa tira uma carta, resolve a ordem e passa a vez. Nao ha eliminacao por vidas.
 
----
+## Como Jogar
 
-## 🎮 Modos de Jogo
+1. Confirme as jogadoras no lobby.
+2. Escolha o temperamento da proxima pessoa adicionada.
+3. Use `Outra pessoa no role` quando aparecer alguem sem carta propria.
+4. Inicie a leitura.
+5. Na vez de cada jogadora, compre uma carta e resolva a acao da tela.
+6. O placar soma `goles` e `pts`.
+7. Quando o baralho termina, vence quem tiver mais pontos; em empate, fica melhor quem bebeu menos.
 
-Ao iniciar o jogo no Lobby, você pode escolher entre dois modos de jogo:
+## Tipos de Carta
 
-### 1. 🍷 Modo Sobrevivência (Vidas)
-*   As jogadoras começam com **5 vidas** representadas por cálices de vinho (`🍷`).
-*   Toda vez que confessam um pecado da carta de Tarô, perdem 1 cálice de essência vital.
-*   Quem zerar as vidas é eliminada.
-*   O jogo termina quando resta apenas uma sobrevivente ou o baralho esgota.
+- **Eu nunca...**: marque quem ja fez. Marcadas bebem e ganham ponto.
+- **Prenda**: a jogadora da vez escolhe cumprir, beber, ou cumprir e beber.
+- **Reviravolta**: a jogadora da vez escolhe quem paga a carta.
+- **Mesa inteira**: todo mundo resolve junto.
+- **Regra**: cria uma regra temporaria para a mesa.
+- **Votacao**: a roda escolhe quem bebe.
 
-### 2. 🍻 Modo Roda de Bar (Goles / Sueca)
-*   **Sem eliminação!** Ideal para festas.
-*   O placar de vidas é substituído por um **Contador de Goles** (`🍺 0 Goles`).
-*   As cartas de Tarô acionam regras e minijogos tradicionais de Sueca:
-    *   **O Louco (0) — Crie uma Regra:** A jogadora digita uma regra na tela (ex: "proibido apontar"). Quem quebrar bebe 1 gole. A regra fica exposta na tela!
-    *   **O Mago (I) — Mestre da Pergunta:** Ninguém pode responder às perguntas dela. Quem responder bebe.
-    *   **A Sacerdotisa (II) — Chave do Banheiro:** Dá direito exclusivo ao banheiro.
-    *   **A Imperatriz (III) & O Imperador (IV):** Todos os Gatos Pretos ou Labradores bebem 2 goles.
-    *   **O Hierofante (V) — Jogo do Pi:** Roda de contagem em círculo substituindo múltiplos de 7 por "Pi".
-    *   **Os Enamorados (VI) — Pacto do Gole:** Duas jogadoras dividem um pacto. Se uma bebe, a outra bebe junto!
-    *   **O Carro (VII) — Categorias:** Jogo de "Stop" falado. Quem falhar bebe 2 goles.
-    *   **A Força (VIII) — Desafio do Dedo:** Todos colocam o dedo na mesa. Quem foi a última bebe 2 goles (selecionada no widget interativo).
-    *   **O Eremita (IX) — Silêncio:** Ninguém pode falar até a próxima rodada.
-    *   **A Roda da Fortuna (X) — Cálice Sagrado:** Adiciona 2 goles ao copo central da tela. Quem tirar a 4ª Roda da Fortuna bebe o copo inteiro acumulado!
-    *   **A Morte (XIII) — Carrasco:** A mais sóbria condena alguém a beber 3 goles.
-    *   **O Diabo (XV) — Verdade ou Consequência:** Escolha entre confessar um segredo ou beber 3 goles.
-    *   **A Torre (XVI) — A Cascata:** Todos bebem em sequência.
-    *   **A Estrela (XVII) — Brinde Coletivo:** Todos bebem 1 gole.
+## Temperamentos
 
----
+- **Labrador**: protege. Toda vez que beber por carta, reduz 1 gole, minimo 0.
+- **Gato Preto**: transforma caos em gloria. Toda vez que beber por carta, ganha +1 ponto extra.
 
-## 📜 Interface e Componentes Interativos
+Os efeitos aparecem no lobby, no manual do Grimorio e nos botoes de resolucao da carta.
 
-1.  **Painel de Influências Místicas:** Um painel dinâmico no topo da tela exibe as regras ativas na rodada (como a Regra da Louca, quem é o Mestre da Pergunta e quem tem a Chave do Banheiro).
-2.  **Display do Cálice Sagrado:** Uma barra de progresso dourada e medidor dinâmico indicam quantos goles estão acumulados no meio da mesa.
-3.  **Widgets de Minijogos:** Caixas de texto e seletores interativos aparecem na tela de revelação de cartas para gerenciar as regras especiais (como digitar a regra, selecionar quem foi o último no Desafio do Dedo ou escolher o parceiro de Pacto).
+## Retratos e Estados
 
----
+- As jogadoras principais usam as artes `classic` no lobby e nas cartas.
+- Ao selecionar uma jogadora, a imagem muda para `cosmic`.
+- Convidadas sem arte propria usam inicial tipografica.
+- A interface evita emoji estrutural; os simbolos de carta usam glifos tipograficos.
 
-## 🚀 Como Jogar Online
+## Controles
 
-O jogo está publicado e atualizado em tempo real:
-👉 **[https://anavanzin.com/tarot-de-maluca/](https://anavanzin.com/tarot-de-maluca/)**
+- `Iniciar a Leitura`: comeca a partida.
+- Clique ou toque no baralho para comprar carta.
+- `Enter` ou `Space` tambem compra carta quando a tela de gameplay esta ativa.
+- `Forjar Arcano`: cria carta customizada.
+- `Grimorio`: abre o manual rapido e o historico da sessao.
 
-Você também pode inspecionar o código-fonte local em:
-📁 **[Repositorio tarot-de-maluca](file:///Users/ana/Documents/GitHub/tarot-de-maluca)**
+## Evidencia de Validacao
+
+- `npm run build` passou.
+- Playwright mobile `393x852` validou:
+  - retratos maiores no lobby;
+  - painel de temperamento visivel abaixo do circulo;
+  - convidada com inicial;
+  - Grimorio centralizado com manual;
+  - gameplay/reveal sem header grande;
+  - Labrador mostrando `+0` em carta de 1 gole;
+  - selecao trocando retrato para `cosmic`;
+  - UI sem emoji-range glyphs no lobby/forge.
+- Screenshot final: `artifacts/tarot-temperamento-manual-mobile-2026-06-27.png`.

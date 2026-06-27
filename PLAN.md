@@ -1,91 +1,102 @@
-# PLAN.md — O Tarô de Maluca browser game pass
+# PLAN.md — O Tarô de Maluca browser game
 
 ## Goal
-Turn the existing Vite SPA into a cleaner browser-game build pass by stabilizing the modal surfaces, adding a compact live ritual status HUD, preserving the mobile-first tarot table aesthetic, and verifying the result with Playwright.
+
+Finish the Vite browser game as a mobile-first Sueca/iPuke-style party game: a table draws tarot cards, resolves confessions, dares, votes, targets, group drinks, and rules, while the UI uses the generated player portraits instead of emoji identities.
+
+The current game direction is **Sueca de Maluca**, not survival elimination.
+
+## Current Design Direction
+
+- The first screen is the playable lobby, not a landing page.
+- Default players use real illustrated portraits:
+  - Lobby and card surfaces use `assets/{player}-classic.png`.
+  - Selected/active player states use `assets/{player}-cosmic.png`.
+  - `gold` remains available as a theme/style asset, but is not the default player-state language.
+- Guest players use a typographic initial fallback.
+- Structural emoji are avoided in game UI; symbolic controls use text glyphs such as `✦`, `✺`, `☾`, `◇`, and `†`.
+- UI controls keep stable touch targets and avoid layout shifts on mobile.
 
 ## Architecture
+
 Static Vite app with code-native UI and local browser state:
 
-- `index.html` owns semantic game screens, dialogs, and static document metadata.
-- `style.css` owns the tarot/woodcut visual system and responsive layout.
-- `app.js` owns game state, turn flow, card draw, confession handling, modal actions, and UI rendering.
-- `assets/` owns browser-loadable visual assets.
-- `artifacts/concept-gameplay-screen-2026-06-27.png` is a design reference generated with Image Gen, not a runtime UI screenshot.
-- `artifacts/concept-lobby-2026-06-27.png`, `artifacts/concept-reveal-2026-06-27.png`, and `artifacts/concept-gameover-2026-06-27.png` extend the UI reference set across the full game flow.
-- `artifacts/concept-arcana-*-2026-06-27.png` are generated personal arcana references based on the original reference-image gallery.
+- `index.html` owns semantic game screens, dialogs, manual content, and static document metadata.
+- `style.css` owns the tarot/woodcut visual system, responsive layout, modal layout, avatar sizing, and mobile reveal positioning.
+- `app.js` owns game state, turn flow, deck construction, temperament effects, card resolution, dialog actions, sound, and UI rendering.
+- `assets/` owns browser-loadable runtime assets.
+- `public/assets/` mirrors runtime assets for Vite static serving.
+- `tarot_medias/illustrations/` keeps the source illustration set provided by Ana.
+- `artifacts/` keeps generated concepts, screenshots, recordings, and verification evidence.
 - `.logs/work-2026-06-27.md` records execution decisions, commands, and evidence.
 
-## Tech Stack
-Vite 6, plain JavaScript modules, HTML dialog elements, CSS custom properties, CSS animation, Web Audio API, Playwright browser automation.
+## Runtime Mechanics
 
-## Baseline / Authority Refs
-- User request: “Use $playwright-interactive, $imagegen, and $openai-docs to plan and build a browser game in this repo. Implement PLAN.md, and log your work under `.logs/`.”
-- Existing implementation plan: `artifacts/implementation_plan.md`.
-- Existing walkthrough: `artifacts/walkthrough.md`.
-- Image Gen concept: `artifacts/concept-gameplay-screen-2026-06-27.png`.
-- Additional Image Gen concepts: `artifacts/concept-lobby-2026-06-27.png`, `artifacts/concept-reveal-2026-06-27.png`, `artifacts/concept-gameover-2026-06-27.png`, and `artifacts/concept-arcana-*-2026-06-27.png`.
-- OpenAI docs check: official Image Generation guide confirms `gpt-image-2` does not currently support transparent backgrounds, so this pass avoids native-transparent generated assets.
-- Baseline command already run: `npm install`, then `npm run build`.
+### Core Loop
 
-## Compatibility Boundary
-- Preserve the existing game name, modes, card database, default players, themes, generated tarot assets, custom-card forge, grimorio history, sound controls, and Vite static deployment model.
-- Keep UI text and controls code-native.
-- Do not add an API dependency or require `OPENAI_API_KEY`.
-- Do not replace existing card art with the concept image.
-- Keep persistent state limited to the existing `tarot_custom_cards` localStorage key.
+1. Lobby starts with Sabrina, Shai, Andressa, Patricia, and Ana.
+2. Player can add named players or choose `Outra pessoa no role`.
+3. Each added player receives the currently selected temperament.
+4. Start game, draw a card, resolve it, then pass to the next player.
+5. Game ends when the deck runs out.
 
-## Verification
-Run these commands and checks after implementation:
+### Card Kinds
+
+- `confession`: mark who has done the statement; marked players drink and gain points.
+- `dare`: active player chooses to fulfill, drink, or do both.
+- `target`: active player chooses who drinks.
+- `group`: the whole table resolves a shared drink.
+- `rule`: active player creates a temporary table rule and gains points.
+- `vote`: table votes who drinks.
+
+### Temperaments
+
+- `Labrador`: reduces every card-driven drink by 1 gole, minimum 0.
+- `Gato Preto`: gains +1 extra point whenever drinking because of a card.
+
+These effects are applied centrally through `applyDrink()` so the resolver UI, scoreboard, history, and actual score state match.
+
+## UI Requirements Implemented
+
+- Player identity uses portraits, not emoji.
+- Lobby portraits are larger than the earlier low-resolution badge layout.
+- Temperament selector sits below the invoked-player circle.
+- Temperament effects are visible in the selector, lobby badges, and card resolver buttons.
+- Grimorio contains a compact manual explaining the rules, scoring, and temperaments.
+- Gameplay and reveal screens hide the large header so the card does not render too low on mobile.
+- Reveal card and resolver fit within a `393x852` mobile viewport in the verified path.
+- Custom-card forge uses typographic symbols instead of emoji options.
+
+## Verification Checklist
+
+Run before calling the game finished:
 
 1. `npm run build`
-2. Start local server with `npm run dev -- --host 127.0.0.1 --port 5173`
-3. Use Playwright to:
+2. Start or reuse local server:
+   - `npm run dev -- --host 127.0.0.1 --port 5173`
+3. Playwright mobile viewport `393x852`:
    - load `http://127.0.0.1:5173/`
-   - open the Grimório and confirm it is visible
-   - open and close the Forjar Arcano dialog
-   - start the game, draw a card, submit a confession, and confirm the ritual status HUD updates
-   - capture desktop and mobile screenshots
-4. Inspect the generated concept and latest browser screenshot with `view_image`.
+   - confirm lobby avatars are image assets and at least `62x62`
+   - confirm lobby uses `assets/*-classic.png`
+   - confirm temperament panel is visible below the player circle
+   - click `Outra pessoa no role` and confirm guest initial fallback
+   - open Grimorio and confirm `Manual rapido` is visible and centered
+   - open Forjar Arcano and confirm symbols are typographic glyphs
+   - start game, draw a card, and confirm:
+     - header is hidden on gameplay/reveal
+     - reveal card starts near the top of the viewport
+     - resolver remains inside the viewport
+     - scoreboard starts at `0 goles`
+     - Labrador can show `+0` on a 1-gole card
+     - selected player avatar switches from `classic` to `cosmic`
+4. Confirm no emoji-range glyphs remain in `index.html`, `app.js`, or `style.css`.
+5. Capture final screenshot evidence under `artifacts/`.
 
-## Tasks
+## Evidence
 
-### Task 1 — Stabilize document metadata and dialogs
-Files:
-- `index.html`
-- `assets/favicon.svg`
-
-Steps:
-- Add a lightweight SVG favicon link so the browser no longer requests missing `/favicon.ico`.
-- Close `#custom-card-dialog` before declaring `#grimoire-dialog`, making both dialogs direct body children.
-- Verify through Playwright that `#grimoire-dialog` has `BODY` as parent, opens with non-zero dimensions, and closes cleanly.
-
-### Task 2 — Add a compact ritual status HUD
-Files:
-- `index.html`
-- `style.css`
-- `app.js`
-
-Steps:
-- Add a `#ritual-status-bar` and `#last-omen-strip` to the gameplay screen, near the active player announcement and outside the central deck area.
-- Add state fields for total cards in session, revealed card count, and last omen text.
-- Render mode, revealed count, remaining deck count, and last omen after setup, draw, confession submit, and turn preparation.
-- Keep the HUD compact so it does not cover the deck or confession controls on mobile.
-
-### Task 3 — Add keyboard-friendly draw support
-Files:
-- `app.js`
-- `style.css`
-
-Steps:
-- Allow `Enter` or `Space` to draw a card only when the gameplay screen is active, no dialog is open, and focus is not inside a text field.
-- Add a visible focus style for the deck button.
-- Keep pointer/touch draw behavior unchanged.
-
-### Task 4 — Log and verify
-Files:
-- `.logs/work-2026-06-27.md`
-
-Steps:
-- Record the generated concept path, OpenAI docs decision, build commands, Playwright checks, screenshots, and residual risk.
-- Run the verification commands listed above.
-- Capture final screenshots under `artifacts/`.
+- Build: `npm run build` passed on 2026-06-27 after the final UI cleanup.
+- Final screenshot: `artifacts/tarot-final-mobile-2026-06-27.png`.
+- Previous temperament/manual screenshot: `artifacts/tarot-temperamento-manual-mobile-2026-06-27.png`.
+- Earlier screenshot: `artifacts/tarot-reveal-layout-assets-2026-06-27.png`.
+- Work log: `.logs/work-2026-06-27.md`.
+- Context checkpoint: `/Users/ana/.gstack/projects/anavvanzin-tarot-de-maluca/checkpoints/20260627-115625-tarot-ui-temperamento-manual.md`.
