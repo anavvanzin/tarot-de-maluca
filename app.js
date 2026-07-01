@@ -6,91 +6,13 @@ const INITIAL_GOLES = 0;
 const MAX_PLAYERS = 10;
 const PLAYER_AVATAR_DEFAULT_VARIANT = "classic";
 const PLAYER_AVATAR_SELECTED_VARIANT = "cosmic";
-const PERSONAL_ARCANA_SLUGS = {
+const SPECIAL_CARD_AVATAR_SLUGS = {
     22: 'andressa',
     23: 'patricia',
     24: 'sabrina',
     25: 'shai',
     26: 'ana'
 };
-const PERSONAL_ARCANA_THEME_VARIANTS = new Set(["classic", "cosmic", "gold"]);
-const PRIMARY_ASSET_DIR = 'assets';
-const FALLBACK_ASSET_DIR = 'public/assets';
-let activeAssetDir = PRIMARY_ASSET_DIR;
-
-function getAssetFilename(assetPath) {
-    return String(assetPath || '')
-        .replace(/^\.?\//, '')
-        .replace(/^public\/assets\//, '')
-        .replace(/^assets\//, '');
-}
-
-function getAssetPath(assetPath) {
-    const filename = getAssetFilename(assetPath);
-    return filename ? `${activeAssetDir}/${filename}` : '';
-}
-
-function getFallbackAssetPath(assetPath) {
-    const filename = getAssetFilename(assetPath);
-    return filename ? `${FALLBACK_ASSET_DIR}/${filename}` : '';
-}
-
-function updateImageAsset(img, assetPath) {
-    const filename = getAssetFilename(assetPath);
-    if (!filename) return;
-    img.dataset.assetFilename = filename;
-    img.dataset.assetFallbackTried = 'false';
-    img.src = getAssetPath(filename);
-}
-
-function handleAssetImageError(event) {
-    const img = event.target;
-    if (!(img instanceof HTMLImageElement)) return;
-    if (img.dataset.assetFallbackTried === 'true') return;
-
-    const filename = img.dataset.assetFilename || getAssetFilename(img.getAttribute('src'));
-    if (!filename) return;
-
-    activeAssetDir = FALLBACK_ASSET_DIR;
-    img.dataset.assetFallbackTried = 'true';
-    img.src = getFallbackAssetPath(filename);
-}
-
-function setBackgroundAssetImage(element, assetPath) {
-    const filename = getAssetFilename(assetPath);
-    if (!filename) return;
-
-    const primaryUrl = getAssetPath(filename);
-    element.style.backgroundImage = `url('${primaryUrl}')`;
-
-    if (activeAssetDir === FALLBACK_ASSET_DIR) return;
-
-    const probe = new Image();
-    probe.onerror = () => {
-        activeAssetDir = FALLBACK_ASSET_DIR;
-        element.style.backgroundImage = `url('${getFallbackAssetPath(filename)}')`;
-        refreshRenderedAvatarImages();
-    };
-    probe.src = primaryUrl;
-}
-
-document.addEventListener('error', handleAssetImageError, true);
-
-function getPersonalArcanaSlug(card) {
-    return card ? PERSONAL_ARCANA_SLUGS[card.id] : null;
-}
-
-function getPersonalArcanaVariant() {
-    return PERSONAL_ARCANA_THEME_VARIANTS.has(currentTheme) ? currentTheme : "gold";
-}
-
-function getCardImagePath(card) {
-    const personalSlug = getPersonalArcanaSlug(card);
-    if (personalSlug) {
-        return `arcana-${personalSlug}-${getPersonalArcanaVariant()}.png`;
-    }
-    return card?.image || "";
-}
 
 // Sound Settings
 let soundEnabled = true;
@@ -98,7 +20,7 @@ let audioCtx = null;
 
 // Game Data
 const ALL_CARDS = [
-    { id: 0, title: "O LOUCO", num: "0", image: "assets/arcana-fool.png", text: "viajei para outra cidade ou estado só para ver uma garota sáfica que conheci na internet na mesma semana." },
+    { id: 0, title: "O LOUCO", num: "0", image: "assets/arcana-fool.png", text: "viajei para outra cidade or estado só para ver uma garota sáfica que conheci na internet na mesma semana." },
     { id: 1, title: "O MAGO", num: "I", image: null, text: "mudei meu visual inteiro (corte de cabelo radical, estilo de roupas) após um término ou por causa de um novo crush." },
     { id: 2, title: "A SACERDOTISA", num: "II", image: null, text: "fingi que não sabia fazer algo simples (como abrir um pote ou montar um móvel) só para deixar a garota fazer e parecer forte." },
     { id: 3, title: "A IMPERATRIZ", num: "III", image: null, text: "planejei o casamento inteiro, escolhi os nomes dos filhos e adotei três gatos na minha cabeça logo após o primeiro encontro." },
@@ -775,7 +697,7 @@ function getPlayerAvatarSlug(player) {
 
 function getPlayerAvatarSrc(player, variant = PLAYER_AVATAR_DEFAULT_VARIANT) {
     const slug = getPlayerAvatarSlug(player);
-    return slug ? getAssetPath(`${slug}-${variant}.png`) : "";
+    return slug ? `assets/${slug}-${variant}.png` : "";
 }
 
 function getPlayerInitial(name) {
@@ -786,7 +708,7 @@ function renderPlayerAvatar(player, className = "player-avatar", variant = PLAYE
     const slug = getPlayerAvatarSlug(player);
     if (slug) {
         const src = getPlayerAvatarSrc(player, variant);
-        return `<span class="${className}" aria-hidden="true"><img class="${className}-img" src="${src}" alt="" loading="lazy" decoding="async" data-avatar-slug="${slug}" data-avatar-variant="${variant}" data-asset-filename="${slug}-${variant}.png"></span>`;
+        return `<span class="${className}" aria-hidden="true"><img class="${className}-img" src="${src}" alt="" loading="lazy" decoding="async" data-avatar-slug="${slug}" data-avatar-variant="${variant}"></span>`;
     }
 
     return `<span class="${className} ${className}--initial" aria-hidden="true">${escapeHTML(getPlayerInitial(player.name))}</span>`;
@@ -795,7 +717,7 @@ function renderPlayerAvatar(player, className = "player-avatar", variant = PLAYE
 function refreshRenderedAvatarImages() {
     document.querySelectorAll("img[data-avatar-slug]").forEach((img) => {
         const variant = img.dataset.avatarVariant || PLAYER_AVATAR_DEFAULT_VARIANT;
-        updateImageAsset(img, `${img.dataset.avatarSlug}-${variant}.png`);
+        img.src = `assets/${img.dataset.avatarSlug}-${variant}.png`;
     });
 }
 
@@ -803,7 +725,7 @@ function setRenderedAvatarVariant(container, variant) {
     const img = container.querySelector("img[data-avatar-slug]");
     if (!img) return;
     img.dataset.avatarVariant = variant;
-    updateImageAsset(img, `${img.dataset.avatarSlug}-${variant}.png`);
+    img.src = `assets/${img.dataset.avatarSlug}-${variant}.png`;
 }
 
 function getArchetypeLabel(archetype) {
@@ -1379,14 +1301,15 @@ function drawCard() {
     arcanaTitleText.textContent = currentCard.title;
     cardKindPrefixText.textContent = meta.label;
 
-    const personalArcanaSlug = getPersonalArcanaSlug(currentCard);
-    cardFlip3d.classList.toggle("personal-arcana-card", Boolean(personalArcanaSlug));
-    arcanaIllustration.className = `card-illustration${personalArcanaSlug ? ' personal-arcana-art' : ''}`;
+    arcanaIllustration.className = 'card-illustration';
     arcanaIllustration.innerHTML = '';
-    const imgUrl = getCardImagePath(currentCard);
-    if (imgUrl) {
+        if (currentCard.image) {
+        let imgUrl = currentCard.image;
+        if (SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]) {
+            imgUrl = `assets/${SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]}-${PLAYER_AVATAR_DEFAULT_VARIANT}.png`;
+        }
         arcanaIllustration.innerHTML = '';
-        setBackgroundAssetImage(arcanaIllustration, imgUrl);
+        arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
     } else {
         arcanaIllustration.style.backgroundImage = 'none';
         arcanaIllustration.innerHTML = `<div class="custom-card-symbol-badge">${currentCard.customSymbol || meta.symbol}</div>`;
@@ -2077,11 +2000,11 @@ if (themeSelector) {
         
         refreshRenderedAvatarImages();
 
-        // Update personal arcana image if a themed personal card is revealed.
-        if (currentCard && getPersonalArcanaSlug(currentCard)) {
-            const imgUrl = getCardImagePath(currentCard);
+        // Update active player card image if revealed
+        if (currentCard && SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]) {
+            const imgUrl = `assets/${SPECIAL_CARD_AVATAR_SLUGS[currentCard.id]}-${PLAYER_AVATAR_DEFAULT_VARIANT}.png`;
             arcanaIllustration.innerHTML = '';
-            setBackgroundAssetImage(arcanaIllustration, imgUrl);
+            arcanaIllustration.style.backgroundImage = `url('${imgUrl}')`;
         }
         
         updateAmbientDroneFrequency();
