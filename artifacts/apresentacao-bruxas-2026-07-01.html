@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apresentação das Bruxas - Tarô de Maluca</title>
+  <style>
+    @page {
+      size: 13.333in 7.5in;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #070605;
+      color: #f2dfb9;
+      font-family: Georgia, "Times New Roman", serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .slide {
+      position: relative;
+      width: 13.333in;
+      height: 7.5in;
+      overflow: hidden;
+      page-break-after: always;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(124, 25, 22, 0.22), transparent 34%),
+        radial-gradient(circle at 82% 78%, rgba(191, 139, 55, 0.12), transparent 28%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 8px),
+        #090706;
+      padding: 0.48in;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0.18in;
+      border: 2px solid rgba(191, 139, 55, 0.78);
+      box-shadow:
+        inset 0 0 0 1px rgba(242, 223, 185, 0.22),
+        0 0 0 1px rgba(0, 0, 0, 0.8);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .slide::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.52) 100%),
+        repeating-linear-gradient(12deg, rgba(242, 223, 185, 0.025) 0 1px, transparent 1px 7px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .content {
+      position: relative;
+      z-index: 4;
+      height: 100%;
+      display: grid;
+      gap: 0.24in;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 0.72in;
+      line-height: 0.95;
+      letter-spacing: 0.01in;
+      text-transform: uppercase;
+      text-shadow: 0.035in 0.035in 0 #160d09;
+    }
+
+    h2 {
+      color: #f3d599;
+      font-size: 0.45in;
+      line-height: 1;
+      text-transform: uppercase;
+      text-shadow: 0.025in 0.025in 0 #160d09;
+    }
+
+    h3 {
+      color: #8f211c;
+      font-size: 0.2in;
+      letter-spacing: 0.035in;
+      text-transform: uppercase;
+    }
+
+    .kicker {
+      color: #bd8a34;
+      font-size: 0.18in;
+      letter-spacing: 0.05in;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .caption,
+    .note,
+    li {
+      color: rgba(242, 223, 185, 0.88);
+      font-size: 0.18in;
+      line-height: 1.35;
+    }
+
+    .paper {
+      background:
+        repeating-linear-gradient(0deg, rgba(20, 13, 8, 0.035) 0 1px, transparent 1px 7px),
+        #edd9b3;
+      color: #17100b;
+      border: 2px solid #17100b;
+      box-shadow: 0.08in 0.08in 0 rgba(0, 0, 0, 0.55);
+    }
+
+    .paper h2,
+    .paper h3,
+    .paper p,
+    .paper li {
+      color: #17100b;
+      text-shadow: none;
+    }
+
+    .seal {
+      display: inline-block;
+      width: fit-content;
+      padding: 0.07in 0.14in;
+      background: #8f211c;
+      border: 1px solid #f2dfb9;
+      color: #f2dfb9;
+      font-size: 0.16in;
+      letter-spacing: 0.035in;
+      text-transform: uppercase;
+    }
+
+    .cover-grid {
+      grid-template-columns: 1.03fr 0.97fr;
+      align-items: center;
+    }
+
+    .cover-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.24in;
+      padding-left: 0.25in;
+    }
+
+    .cover-image,
+    .feature-image,
+    .witch-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 2px solid rgba(191, 139, 55, 0.85);
+      box-shadow: 0.08in 0.08in 0 rgba(0, 0, 0, 0.58);
+      filter: contrast(1.05) saturate(0.96);
+    }
+
+    .cover-image {
+      max-height: 6.15in;
+      object-position: 50% 8%;
+    }
+
+    .split {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+
+    .copy-block {
+      padding: 0.34in;
+      align-self: center;
+    }
+
+    ul {
+      margin: 0.18in 0 0;
+      padding-left: 0.28in;
+    }
+
+    li + li {
+      margin-top: 0.08in;
+    }
+
+    .lineup {
+      grid-template-rows: auto 1fr;
+    }
+
+    .lineup-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 0.3in;
+    }
+
+    .lineup-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.16in;
+      min-height: 0;
+    }
+
+    .lineup-card {
+      position: relative;
+      min-height: 0;
+      padding: 0.08in;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 0.08in;
+      background: #120d0a;
+      border: 1px solid rgba(191, 139, 55, 0.72);
+    }
+
+    .lineup-card img {
+      width: 100%;
+      height: 4.95in;
+      object-fit: cover;
+      object-position: center 12%;
+      filter: contrast(1.06) saturate(0.9);
+    }
+
+    .lineup-card strong {
+      display: block;
+      color: #f3d599;
+      font-size: 0.17in;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .witch {
+      grid-template-columns: 0.86fr 1.14fr;
+      align-items: center;
+    }
+
+    .witch-copy {
+      padding: 0.42in;
+      display: flex;
+      flex-direction: column;
+      gap: 0.16in;
+    }
+
+    .witch-copy h2 {
+      color: #17100b;
+      font-size: 0.52in;
+    }
+
+    .witch-copy .role {
+      color: #8f211c;
+      font-size: 0.19in;
+      letter-spacing: 0.03in;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .witch-copy .body {
+      color: #17100b;
+      font-size: 0.21in;
+      line-height: 1.35;
+    }
+
+    .witch-image {
+      object-position: center 8%;
+      max-height: 6.3in;
+    }
+
+    .feature-image {
+      max-height: 6.3in;
+      object-position: center 8%;
+    }
+
+    .footer-mark {
+      position: absolute;
+      right: 0.52in;
+      bottom: 0.34in;
+      z-index: 5;
+      color: rgba(242, 223, 185, 0.56);
+      font-size: 0.12in;
+      letter-spacing: 0.035in;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <section class="slide">
+    <div class="content cover-grid">
+      <div class="cover-copy">
+        <p class="kicker">Tarô de Maluca</p>
+        <h1>Apresentação das Bruxas</h1>
+        <p class="caption">Cinco arcanos pessoais em linguagem de xilogravura, bruxaria de mesa e glamour ritual.</p>
+        <span class="seal">Coven visual</span>
+      </div>
+      <img class="cover-image" src="concept-lobby-2026-06-27.png" alt="Tela conceitual do lobby do Tarô de Maluca">
+    </div>
+    <div class="footer-mark">01 / apresentação</div>
+  </section>
+
+  <section class="slide">
+    <div class="content split">
+      <img class="feature-image" src="concept-reveal-2026-06-27.png" alt="Tela conceitual de revelação do arcano">
+      <div class="copy-block paper">
+        <h3>Direção visual</h3>
+        <h2>Xilogravura de bruxas</h2>
+        <ul>
+          <li>Papel envelhecido, tinta preta e ornamentos gravados.</li>
+          <li>Vermelho-vinho como selo de confissão e risco de ritual.</li>
+          <li>Ouro antigo apenas como filete, moldura e brilho de mesa.</li>
+          <li>As bruxas são arcanos pessoais: personagens, não avatares genéricos.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-mark">02 / linguagem</div>
+  </section>
+
+  <section class="slide">
+    <div class="content lineup">
+      <div class="lineup-header">
+        <div>
+          <p class="kicker">O círculo</p>
+          <h2>As cinco bruxas</h2>
+        </div>
+        <p class="caption">Cada carta precisa parecer uma lâmina colecionável: retrato, atributo, borda e assinatura.</p>
+      </div>
+      <div class="lineup-grid">
+        <div class="lineup-card">
+          <img src="concept-arcana-sabrina-2026-06-27.png" alt="Arcano A Sabrina">
+          <strong>A Sabrina</strong>
+        </div>
+        <div class="lineup-card">
+          <img src="concept-arcana-shai-2026-06-27.png" alt="Arcano A Shai">
+          <strong>A Shai</strong>
+        </div>
+        <div class="lineup-card">
+          <img src="concept-arcana-andressa-2026-06-27.png" alt="Arcano A Andressa">
+          <strong>A Andressa</strong>
+        </div>
+        <div class="lineup-card">
+          <img src="concept-arcana-patricia-2026-06-27.png" alt="Arcano A Patrícia">
+          <strong>A Patrícia</strong>
+        </div>
+        <div class="lineup-card">
+          <img src="concept-arcana-ana-2026-06-27.png" alt="Arcano A Ana">
+          <strong>A Ana</strong>
+        </div>
+      </div>
+    </div>
+    <div class="footer-mark">03 / lineup</div>
+  </section>
+
+  <section class="slide">
+    <div class="content witch">
+      <img class="witch-image" src="concept-arcana-sabrina-2026-06-27.png" alt="Arcano A Sabrina">
+      <div class="witch-copy paper">
+        <h3>Arcano XXIV</h3>
+        <h2>A Sabrina</h2>
+        <p class="role">Bruxa punk-romântica</p>
+        <p class="body">Jaqueta, gesto de paz, cristais e flores. A carta mistura deboche e doçura: uma presença que parece leve, mas entra na mesa como feitiço de atitude.</p>
+        <span class="seal">Paz, couro, caos</span>
+      </div>
+    </div>
+    <div class="footer-mark">04 / sabrina</div>
+  </section>
+
+  <section class="slide">
+    <div class="content witch">
+      <img class="witch-image" src="concept-arcana-shai-2026-06-27.png" alt="Arcano A Shai">
+      <div class="witch-copy paper">
+        <h3>Arcano XXV</h3>
+        <h2>A Shai</h2>
+        <p class="role">Bruxa da estrela e do espelho</p>
+        <p class="body">Bolo, taça, brilho e pose de celebração. A Shai é o arcano da performance encantada: tudo nela parece festa, mas a composição segura uma aura cerimonial.</p>
+        <span class="seal">Doce, ouro, palco</span>
+      </div>
+    </div>
+    <div class="footer-mark">05 / shai</div>
+  </section>
+
+  <section class="slide">
+    <div class="content witch">
+      <img class="witch-image" src="concept-arcana-andressa-2026-06-27.png" alt="Arcano A Andressa">
+      <div class="witch-copy paper">
+        <h3>Arcano XXII</h3>
+        <h2>A Andressa</h2>
+        <p class="role">Bruxa da noite e do dragão</p>
+        <p class="body">Martini, preto, tatuagem e postura de domínio. A carta tem energia de pacto sofisticado: a bruxa que observa, escolhe a hora e então sentencia.</p>
+        <span class="seal">Martini, dragão, controle</span>
+      </div>
+    </div>
+    <div class="footer-mark">06 / andressa</div>
+  </section>
+
+  <section class="slide">
+    <div class="content witch">
+      <img class="witch-image" src="concept-arcana-patricia-2026-06-27.png" alt="Arcano A Patrícia">
+      <div class="witch-copy paper">
+        <h3>Arcano XXIII</h3>
+        <h2>A Patrícia</h2>
+        <p class="role">Bruxa da lâmina gráfica</p>
+        <p class="body">Delineado forte, olhar frontal e signos de proteção. A Patrícia funciona como carta de corte: elegante, urbana, seca no traço e impossível de ignorar.</p>
+        <span class="seal">Olho, risco, presença</span>
+      </div>
+    </div>
+    <div class="footer-mark">07 / patrícia</div>
+  </section>
+
+  <section class="slide">
+    <div class="content witch">
+      <img class="witch-image" src="concept-arcana-ana-2026-06-27.png" alt="Arcano A Ana">
+      <div class="witch-copy paper">
+        <h3>Arcano XXVI</h3>
+        <h2>A Ana</h2>
+        <p class="role">Bruxa do presságio azul</p>
+        <p class="body">Céu, caneca de metal e mesa astrológica. A Ana fecha o coven como sinal de leitura: calma por fora, cheia de mapa, vento e suspeita por dentro.</p>
+        <span class="seal">Céu, metal, oráculo</span>
+      </div>
+    </div>
+    <div class="footer-mark">08 / ana</div>
+  </section>
+
+  <section class="slide">
+    <div class="content split">
+      <div class="copy-block paper">
+        <h3>Aplicação</h3>
+        <h2>Mesa ritual jogável</h2>
+        <ul>
+          <li>O centro da tela é sempre o baralho ou a carta revelada.</li>
+          <li>A interface deve parecer impressa, manuseada e marcada por selos.</li>
+          <li>As bruxas entram como retratos de alto valor visual, não como ícones pequenos.</li>
+        </ul>
+      </div>
+      <img class="feature-image" src="concept-gameplay-screen-2026-06-27.png" alt="Tela conceitual de gameplay">
+    </div>
+    <div class="footer-mark">09 / mesa</div>
+  </section>
+
+  <section class="slide">
+    <div class="content split">
+      <img class="feature-image" src="concept-gameover-2026-06-27.png" alt="Tela conceitual de julgamento final">
+      <div class="copy-block paper">
+        <h3>Fechamento</h3>
+        <h2>Julgamento das bruxas</h2>
+        <p class="body">A apresentação vende a fantasia certa: um jogo de confissões que parece grimório, baralho e retrato de coven. A próxima etapa é transformar essa direção em assets consistentes para runtime.</p>
+        <span class="seal">Pronta para apresentar</span>
+      </div>
+    </div>
+    <div class="footer-mark">10 / julgamento</div>
+  </section>
+</body>
+</html>
